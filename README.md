@@ -1,17 +1,10 @@
 # Veeam Custom Plugins
 
-This repository contains community-driven custom plugins and supporting resources for Veeam products. It is intended to provide a central place for reusable scripts, extensions, and examples that can help automate, customize, and extend Veeam operations.
+This repository contains community-driven custom plugins for use with the Veeam Service Provider Console. It is intended to provide a central place for reusable scripts, extensions, and examples that can help automate, customize, and extend Veeam operations. Plugins in this repository are not created by Veeam R&D or validated by Veeam Q&A. They are maintained by community members which may or not be Veeam employees.
 
 ## 📗 Documentation
 
-Use this repository as a collection point for:
-
-* Custom plugin implementations
-* Example integrations and utilities
-* Community-contributed scripts and extensions
-* Guidance for building and using custom Veeam automation
-
-Add project-specific documentation here as new plugins and examples are introduced.
+Documentation, including usage instructions, can be found within each plugin directory.
 
 ## ✍ Contributions
 
