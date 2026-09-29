@@ -102,6 +102,10 @@ cd source
 
 VSPC requires signed packages. On the first run the script generates a self-signed code-signing certificate (`source/packaging/plugin/sign.p12`, excluded from the repository); pass `-CertPath` and `-CertPassword` to sign with your own certificate. To rebuild the Integration Guide, start Chrome or Edge with `--headless=new --remote-debugging-port=9222`, run `source/docs/guide-src/build.ps1`, and copy the resulting PDF and `guide.html` into `documentation/`.
 
+## Author
+
+Jared Olson ([linkedin.com/in/jaredjolson](https://www.linkedin.com/in/jaredjolson))
+
 ## License
 
 Distributed under the MIT License of this repository (see [LICENSE](../LICENSE)).
