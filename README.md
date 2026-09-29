@@ -1,24 +1,21 @@
-# VeeamHub Repository Template
+# Veeam Custom Plugins
 
-Here are instructions on how to use this template:
-
-* Navigate to the [main page of this repository](https://github.com/VeeamHub/veeamhub-template)
-* Follow instructions for [creating a repository from a template](https://help.github.com/en/articles/creating-a-repository-from-a-template)
-  * _Repository names **must** have the prefix:_ **veeam-**
-  * Example: _veeam-repo-name_
-* Replace **all** repository-specific links
-  * `issues` link in _README.md_
-  * `create an issue` link in _README.md_
-  * `opening a new issue` link in _CONTRIBUTING.md_
-* Remove the instructions from this section and replace it with information describing this repository.
+This repository contains community-driven custom plugins and supporting resources for Veeam products. It is intended to provide a central place for reusable scripts, extensions, and examples that can help automate, customize, and extend Veeam operations.
 
 ## 📗 Documentation
 
-_Place documentation or links to documentation here._
+Use this repository as a collection point for:
+
+* Custom plugin implementations
+* Example integrations and utilities
+* Community-contributed scripts and extensions
+* Guidance for building and using custom Veeam automation
+
+Add project-specific documentation here as new plugins and examples are introduced.
 
 ## ✍ Contributions
 
-We welcome contributions from the community! We encourage you to create [issues](https://github.com/VeeamHub/{repo-name}/issues/new/choose) for Bugs & Feature Requests and submit Pull Requests. For more detailed information, refer to our [Contributing Guide](CONTRIBUTING.md).
+We welcome contributions from the community! We encourage you to create [issues](https://github.com/VeeamHub/veeam-custom-plugins/issues/new/choose) for bugs, feature requests, and enhancement ideas, and submit pull requests. For more detailed information, refer to our [Contributing Guide](CONTRIBUTING.md).
 
 ## 🤝🏾 License
 
@@ -26,4 +23,4 @@ We welcome contributions from the community! We encourage you to create [issues]
 
 ## 🤔 Questions
 
-If you have any questions or something is unclear, please don't hesitate to [create an issue](https://github.com/VeeamHub/{repo-name}/issues/new/choose) and let us know!
+If you have any questions or something is unclear, please don't hesitate to [create an issue](https://github.com/VeeamHub/veeam-custom-plugins/issues/new/choose) and let us know!
