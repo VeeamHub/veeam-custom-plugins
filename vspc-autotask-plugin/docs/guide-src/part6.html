@@ -1,0 +1,292 @@
+<!-- ==================== MONITORING ==================== -->
+<div class="topic">
+<h1 id="monitoring">Monitoring the Integration</h1>
+
+<p class="intro">You can check the health of the integration, review the operations performed by the
+plugin, and collect plugin log files.</p>
+
+<h2 id="pluginstatus">Plugin Status Page</h2>
+
+<p>The <span class="ui">Plugin Status</span> page is the first page of the plugin and reports the
+state of the integration.</p>
+
+<table>
+  <thead><tr><th style="width:48mm">Field</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><span class="ui">Status</span></td><td>State of the connection to Autotask PSA:
+      <ul>
+        <li><span class="ui">Configured</span> &mdash; the plugin stores Autotask PSA credentials and
+          a check against the Autotask PSA API succeeded.</li>
+        <li><span class="ui">Connection error</span> &mdash; credentials are stored, but the check
+          failed. The reason is displayed below the field.</li>
+        <li><span class="ui">Not configured</span> &mdash; the connection to Autotask PSA has not
+          been configured.</li>
+      </ul>
+    </td></tr>
+    <tr><td><span class="ui">Last update</span></td><td>Time when the plugin last refreshed cached
+      data or performed an alarm poll.</td></tr>
+    <tr><td><span class="ui">Autotask zone</span></td><td>Autotask PSA API zone detected for the
+      configured API user. To open the connection window, click
+      <span class="ui">Change</span>.</td></tr>
+    <tr><td><span class="ui">Integration Settings</span></td><td>Toggles for the
+      <span class="ui">Companies</span>, <span class="ui">Ticketing</span> and
+      <span class="ui">Billing</span> integration features, and the
+      <span class="ui">Enable All</span> link.</td></tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>The result of the connection check is cached for a short period, so the status reflects an
+  actual call to Autotask PSA rather than the presence of stored credentials, without a request on
+  every page load.</p>
+</div>
+
+<h2 id="activity">Activity Page</h2>
+
+<p>The <span class="ui">Activity</span> page displays the plugin event log: connection changes,
+company mapping operations, billing runs and their results, and ticket engine operations. Every
+record contains the time, severity level, functional area and message.</p>
+
+<p>To narrow down the list, filter records by area
+(<span class="ui">connection</span>, <span class="ui">companies</span>,
+<span class="ui">billing</span>, <span class="ui">ticketing</span>,
+<span class="ui">system</span>) and by level. Check this page first if a scheduled operation did not
+produce the expected result.</p>
+
+<h2 id="logs">Obtaining Plugin Logs</h2>
+
+<h3>Required Privileges</h3>
+<p>To perform this task, a user must have the following role assigned:
+<span class="ui">Portal Administrator</span>.</p>
+
+<h3>Obtaining Plugin Logs</h3>
+
+<p>The plugin writes log files on the machine that hosts the Veeam Service Provider Console Server
+component. The log files are located in the following folder:</p>
+
+<div class="pathbox">C:\ProgramData\VspcAutotaskPlugin\logs</div>
+
+<p>The log contains records about plugin startup, every request that the portal sends to the plugin
+and its result, Autotask PSA API errors, and the result of every scheduled and manual
+synchronization. If the plugin cannot start, for example because the plugin package was deployed
+incompletely, the reason is written to the <code>startup-error.log</code> file in the same
+folder.</p>
+
+<p>The plugin also provides a log archive to the Veeam Service Provider Console plugin host, which
+contains the activity of the last 30 days.</p>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>Log files may contain company names, alarm messages and Autotask PSA entity identifiers. Log
+  files do not contain the Autotask PSA secret. Review the collected logs before you send them
+  outside your organization.</p>
+</div>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<p>The following table describes the most common issues and the way to resolve them.</p>
+
+<table>
+  <thead><tr><th style="width:62mm">Issue</th><th>Cause and resolution</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Veeam Service Provider Console reports that a ticket is closed, but the ticket remains open
+        in Autotask PSA, and duplicate tickets are created for the same alarm.</td>
+      <td>The <span class="ui">Status for new tickets</span> and
+        <span class="ui">Status for closed tickets</span> settings use the same Autotask PSA status.
+        Select two different statuses in the <span class="ui">Ticket Settings</span> window. For
+        details, see <a href="#ticketsettings">Configuring Ticket Settings</a>.</td>
+    </tr>
+    <tr>
+      <td>The list of companies is empty.</td>
+      <td>The company lists have not been retrieved yet, or the connection to Autotask PSA is not
+        healthy. Click <span class="ui">Refresh Data</span>, and then check the status on the
+        <span class="ui">Plugin Status</span> page.</td>
+    </tr>
+    <tr>
+      <td>The <span class="ui">Contracts</span> window displays no contracts for a company.</td>
+      <td>The mapped Autotask PSA company has no contracts, or none of its contracts is a recurring
+        service contract. Create a recurring service contract in Autotask PSA, and then click
+        <span class="ui">Refresh Data</span> on the <span class="ui">Contracts</span> tab. Note that
+        the Autotask PSA company identifier <code>0</code> is a valid identifier: it is the record of
+        your own organization, and its contracts are listed as usual.</td>
+    </tr>
+    <tr>
+      <td>Queue, status and priority lists in the <span class="ui">Ticket Settings</span> window are
+        empty.</td>
+      <td>The values are retrieved from Autotask PSA when the window opens. If the connection is not
+        healthy, the lists remain empty and the fields are unavailable. Configure the connection
+        first.</td>
+    </tr>
+    <tr>
+      <td>Billing lines are reported with the <span class="ui">error</span> status.</td>
+      <td>Check the message in the results list. The most common causes are an effective date outside
+        the contract period, a contract that is not a recurring service contract, and an Autotask PSA
+        service that the API user cannot modify.</td>
+    </tr>
+    <tr>
+      <td>Reported quantities of a storage service are unexpectedly high or low.</td>
+      <td>Check that the measurement unit of the Autotask PSA service matches the unit of the mapped
+        Veeam Service Provider Console service. Veeam Service Provider Console storage counters are
+        converted to gigabytes, so an Autotask PSA service priced per terabyte will be billed
+        incorrectly.</td>
+    </tr>
+    <tr>
+      <td>Opening a plugin page returns an authorization error.</td>
+      <td>The plugin admits only <span class="ui">Portal Administrator</span> and
+        <span class="ui">Portal Operator</span> users. Log in with an account that has one of these
+        roles assigned.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ==================== TERMINOLOGY ==================== -->
+<div class="topic">
+<h1 id="terminology">Terminology</h1>
+
+<p class="intro">The same entity may have different names in Veeam Service Provider Console and in
+Autotask PSA. The following table describes how the entities correspond to each other.</p>
+
+<table>
+  <thead>
+    <tr><th style="width:70mm">Veeam Service Provider Console</th><th>Autotask PSA</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Company</td><td>Company</td></tr>
+    <tr><td>Service, that is a billable usage counter</td><td>Service in the service catalog</td></tr>
+    <tr><td>Measured consumption of a service</td><td>Contract service, whose quantity is maintained
+      through contract service adjustments</td></tr>
+    <tr><td>Subscription plan</td><td>Service unit price</td></tr>
+    <tr><td>Alarm</td><td>Ticket</td></tr>
+    <tr><td>Alarm severity: <em>Warning</em>, <em>Error</em></td><td>Ticket priority</td></tr>
+    <tr><td>Alarm object type</td><td>Reported in the ticket title and description</td></tr>
+    <tr><td>Plugin REST API key, provisioned automatically</td><td>API user name, secret and
+      integration code</td></tr>
+    <tr><td>No equivalent</td><td>Zone, detected automatically from the API user name</td></tr>
+  </tbody>
+</table>
+
+<h2>Plugin Pages</h2>
+
+<table>
+  <thead><tr><th style="width:48mm">Page</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><span class="ui">Plugin Status</span></td><td>Integration status, Autotask PSA zone and
+      the connection window; toggles for the <span class="ui">Companies</span>,
+      <span class="ui">Ticketing</span> and <span class="ui">Billing</span> integration
+      features.</td></tr>
+    <tr><td><span class="ui">Companies</span></td><td>Mapping between companies in Veeam Service
+      Provider Console and Autotask PSA.</td></tr>
+    <tr><td><span class="ui">Ticketing</span></td><td>The <span class="ui">Alarms</span> tab
+      contains the list of alarms that create tickets and the
+      <span class="ui">Ticket Settings</span> window. The
+      <span class="ui">Recent Ticket Activity</span> tab reports the operations performed by the
+      ticket engine.</td></tr>
+    <tr><td><span class="ui">Billing</span></td><td>The <span class="ui">Contracts</span> tab
+      contains per-company contract and service selection, preview and synchronization. The
+      <span class="ui">Product Mapping</span> tab contains mapping of Veeam Service Provider Console
+      services to Autotask PSA services, and billing settings.</td></tr>
+    <tr><td><span class="ui">Activity</span></td><td>Plugin event log.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ==================== REST ENDPOINTS ==================== -->
+<div class="topic">
+<h1 id="endpoints">Plugin REST Endpoints</h1>
+
+<p class="intro">The plugin UI uses the endpoints described in this section. They are documented for
+troubleshooting purposes. These endpoints are not a public API and may change in a future plugin
+version.</p>
+
+<p>All endpoints are served by the plugin service on the loopback interface and are proxied by Veeam
+Service Provider Console under
+<code>/plugins/7A4C3E529D144F6BB7A152AE23C90D11/</code>. Requests contain the identity of the portal
+user, which the plugin verifies. Only <span class="ui">Portal Administrator</span> and
+<span class="ui">Portal Operator</span> users are admitted.</p>
+
+<h2>Status and Settings</h2>
+<table class="tight">
+  <thead><tr><th style="width:16mm">Method</th><th style="width:64mm">Path</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td>GET</td><td><code>/api/status</code></td><td>Integration status overview</td></tr>
+    <tr><td>GET</td><td><code>/api/session</code></td><td>Reports whether the portal user may administer the plugin</td></tr>
+    <tr><td>GET</td><td><code>/api/health</code></td><td>Liveness probe</td></tr>
+    <tr><td>GET</td><td><code>/api/activity</code></td><td>Activity log</td></tr>
+    <tr><td>GET, POST</td><td><code>/api/settings/autotask</code></td><td>Read the masked connection settings; test and save new settings</td></tr>
+    <tr><td>POST</td><td><code>/api/settings/autotask/disconnect</code></td><td>Remove the Autotask PSA connection</td></tr>
+    <tr><td>GET, POST</td><td><code>/api/settings/features</code></td><td>Integration features</td></tr>
+    <tr><td>GET, POST</td><td><code>/api/settings/ticketing</code></td><td>Ticket settings</td></tr>
+    <tr><td>GET, POST</td><td><code>/api/settings/billing</code></td><td>Billing settings</td></tr>
+  </tbody>
+</table>
+
+<h2>Companies</h2>
+<table class="tight">
+  <thead><tr><th style="width:16mm">Method</th><th style="width:64mm">Path</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td>GET</td><td><code>/api/companies</code></td><td>Merged company mapping view</td></tr>
+    <tr><td>POST</td><td><code>/api/companies/refresh</code></td><td>Refresh both cached company lists</td></tr>
+    <tr><td>POST</td><td><code>/api/companies/automap</code></td><td>Match companies by name</td></tr>
+    <tr><td>POST</td><td><code>/api/companies/map</code></td><td>Map a company</td></tr>
+    <tr><td>POST</td><td><code>/api/companies/unmap</code></td><td>Remove a company mapping</td></tr>
+  </tbody>
+</table>
+
+<h2>Billing</h2>
+<table class="tight">
+  <thead><tr><th style="width:16mm">Method</th><th style="width:64mm">Path</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td>GET, POST</td><td><code>/api/billing/services</code></td><td>Service catalog with mappings; save a service mapping</td></tr>
+    <tr><td>GET, POST</td><td><code>/api/billing/companies</code></td><td>Per-company billing configuration</td></tr>
+    <tr><td>POST</td><td><code>/api/billing/companies/remove</code></td><td>Disable billing for a company</td></tr>
+    <tr><td>POST</td><td><code>/api/billing/preview</code></td><td>Dry run</td></tr>
+    <tr><td>POST</td><td><code>/api/billing/run</code></td><td>Run synchronization</td></tr>
+    <tr><td>GET</td><td><code>/api/billing/history</code></td><td>Adjustment history</td></tr>
+    <tr><td>GET</td><td><code>/api/vspc/subscriptionplans</code></td><td>Veeam Service Provider Console subscription plans</td></tr>
+  </tbody>
+</table>
+
+<h2>Ticketing</h2>
+<table class="tight">
+  <thead><tr><th style="width:16mm">Method</th><th style="width:64mm">Path</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td>GET</td><td><code>/api/ticketing/alarms</code></td><td>Alarms with ticketing rules</td></tr>
+    <tr><td>POST</td><td><code>/api/ticketing/alarms/refresh</code></td><td>Retrieve alarms from Veeam Service Provider Console</td></tr>
+    <tr><td>POST</td><td><code>/api/ticketing/alarms/enable</code></td><td>Enable or disable ticketing for alarms</td></tr>
+    <tr><td>GET</td><td><code>/api/ticketing/links</code></td><td>Recent ticket activity</td></tr>
+    <tr><td>POST</td><td><code>/api/ticketing/poll</code></td><td>Poll alarms now</td></tr>
+  </tbody>
+</table>
+
+<h2>Autotask PSA Lookups</h2>
+<table class="tight">
+  <thead><tr><th style="width:16mm">Method</th><th style="width:64mm">Path</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td>GET</td><td><code>/api/autotask/picklists</code></td><td>Queues, statuses, priorities, sources, ticket types</td></tr>
+    <tr><td>GET</td><td><code>/api/autotask/companytypes</code></td><td>Company types</td></tr>
+    <tr><td>GET</td><td><code>/api/autotask/servicefields</code></td><td>Service field values</td></tr>
+    <tr><td>GET</td><td><code>/api/autotask/services</code></td><td>Active services</td></tr>
+    <tr><td>GET</td><td><code>/api/autotask/billingcodes</code></td><td>Active billing codes</td></tr>
+    <tr><td>GET</td><td><code>/api/autotask/contracts?companyId=</code></td><td>Contracts of a company</td></tr>
+  </tbody>
+</table>
+
+<h2>Plugin Host Endpoints</h2>
+<p>Veeam Service Provider Console calls the following endpoints directly on the plugin service port.
+They are not proxied to the portal.</p>
+<table class="tight">
+  <thead><tr><th style="width:16mm">Method</th><th style="width:64mm">Path</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td>GET</td><td><code>/api/v1/healthcheck</code></td><td>Health probe</td></tr>
+    <tr><td>GET</td><td><code>/api/v1/readiness</code></td><td>Readiness probe</td></tr>
+    <tr><td>GET</td><td><code>/api/v1/logs</code></td><td>Log archive of the last 30 days</td></tr>
+    <tr><td>DELETE</td><td><code>/api/v1/localdata</code></td><td>Purge plugin data before the plugin is removed</td></tr>
+  </tbody>
+</table>
+</div>
+
+</body>
+</html>

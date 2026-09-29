@@ -1,0 +1,240 @@
+openapi: 3.0.3
+info:
+  title: Autotask PSA Integration for Veeam Service Provider Console
+  description: >
+    Endpoints exposed by the Autotask PSA plugin service and proxied by the VSPC UI at
+    /plugins/{pluginId}/. Requests carry the X-User-Uid header for authenticated portal users;
+    the service restricts access to Portal Administrator / Portal Operator roles.
+  version: 1.0.0
+servers:
+  - url: https://localhost/
+
+# Host-management endpoints (/api/v1/healthcheck, /api/v1/readiness, /api/v1/logs,
+# /api/v1/localdata) are intentionally NOT published here — VSPC calls them directly
+# on the plugin service port, not through the UI proxy.
+
+paths:
+
+  # ---- plugin UI pages (proxied to the service, which serves the SPA) ----
+  /:
+    get:
+      tags: [Pages]
+      summary: Main plugin page
+      operationId: getRootPage
+      responses:
+        '200': { description: OK, content: { text/html: { schema: { type: object } } } }
+    post:
+      tags: [Pages]
+      summary: Main plugin page
+      operationId: postRootPage
+      responses:
+        '200': { description: OK, content: { text/html: { schema: { type: object } } } }
+  /index.html:
+    get:
+      tags: [Pages]
+      summary: Main plugin page (explicit file)
+      operationId: getIndexPage
+      responses:
+        '200': { description: OK, content: { text/html: { schema: { type: object } } } }
+    post:
+      tags: [Pages]
+      summary: Main plugin page (explicit file)
+      operationId: postIndexPage
+      responses:
+        '200': { description: OK, content: { text/html: { schema: { type: object } } } }
+  /autotaskPsa:
+    get:
+      tags: [Pages]
+      summary: Internal plugin page (page-config pagePath)
+      operationId: getInternalPage
+      responses:
+        '200': { description: OK, content: { text/html: { schema: { type: object } } } }
+    post:
+      tags: [Pages]
+      summary: Internal plugin page (page-config pagePath)
+      operationId: postInternalPage
+      responses:
+        '200': { description: OK, content: { text/html: { schema: { type: object } } } }
+  /autotaskPsa/:
+    get:
+      tags: [Pages]
+      summary: Internal plugin page (trailing slash)
+      operationId: getInternalPageSlash
+      responses:
+        '200': { description: OK, content: { text/html: { schema: { type: object } } } }
+    post:
+      tags: [Pages]
+      summary: Internal plugin page (trailing slash)
+      operationId: postInternalPageSlash
+      responses:
+        '200': { description: OK, content: { text/html: { schema: { type: object } } } }
+
+  # Portal-nav routes (AppPortalLayout). Declared so a refresh or deep-link onto a left-nav
+  # item is forwarded to the service, which serves the SPA. In-app navigation is client-side.
+  /companies:
+    get:
+      tags: [Pages]
+      summary: Companies nav page (SPA route)
+      operationId: getCompaniesPage
+      responses:
+        '200': { description: OK, content: { text/html: { schema: { type: object } } } }
+    post:
+      tags: [Pages]
+      summary: Companies nav page (SPA route)
+      operationId: postCompaniesPage
+      responses:
+        '200': { description: OK, content: { text/html: { schema: { type: object } } } }
+  /billing:
+    get:
+      tags: [Pages]
+      summary: Billing nav page (SPA route)
+      operationId: getBillingPage
+      responses:
+        '200': { description: OK, content: { text/html: { schema: { type: object } } } }
+    post:
+      tags: [Pages]
+      summary: Billing nav page (SPA route)
+      operationId: postBillingPage
+      responses:
+        '200': { description: OK, content: { text/html: { schema: { type: object } } } }
+  /ticketing:
+    get:
+      tags: [Pages]
+      summary: Ticketing nav page (SPA route)
+      operationId: getTicketingPage
+      responses:
+        '200': { description: OK, content: { text/html: { schema: { type: object } } } }
+    post:
+      tags: [Pages]
+      summary: Ticketing nav page (SPA route)
+      operationId: postTicketingPage
+      responses:
+        '200': { description: OK, content: { text/html: { schema: { type: object } } } }
+  /settings:
+    get:
+      tags: [Pages]
+      summary: Settings nav page (SPA route)
+      operationId: getSettingsPage
+      responses:
+        '200': { description: OK, content: { text/html: { schema: { type: object } } } }
+    post:
+      tags: [Pages]
+      summary: Settings nav page (SPA route)
+      operationId: postSettingsPage
+      responses:
+        '200': { description: OK, content: { text/html: { schema: { type: object } } } }
+  /activity:
+    get:
+      tags: [Pages]
+      summary: Activity nav page (SPA route)
+      operationId: getActivityPage
+      responses:
+        '200': { description: OK, content: { text/html: { schema: { type: object } } } }
+    post:
+      tags: [Pages]
+      summary: Activity nav page (SPA route)
+      operationId: postActivityPage
+      responses:
+        '200': { description: OK, content: { text/html: { schema: { type: object } } } }
+  /app.js:
+    get:
+      tags: [Pages]
+      summary: SPA script
+      operationId: getAppJs
+      responses:
+        '200': { description: OK }
+  /app.css:
+    get:
+      tags: [Pages]
+      summary: SPA stylesheet
+      operationId: getAppCss
+      responses:
+        '200': { description: OK }
+  /favicon.png:
+    get:
+      tags: [Pages]
+      summary: Plugin icon
+      operationId: getFavicon
+      responses:
+        '200': { description: OK }
+  /api/health:
+    get: { summary: Liveness probe, operationId: getHealth, responses: { '200': { description: OK } } }
+  /api/session:
+    get: { summary: Reports whether the VSPC portal user may administer the plugin, operationId: getSession, responses: { '200': { description: OK } } }
+
+  /api/status:
+    get: { summary: Integration status overview, operationId: getStatus, responses: { '200': { description: OK } } }
+  /api/activity:
+    get: { summary: Activity log, operationId: getActivity, responses: { '200': { description: OK } } }
+
+  /api/settings/autotask:
+    get: { summary: Autotask connection settings (masked), operationId: getAutotaskSettings, responses: { '200': { description: OK } } }
+    post: { summary: Test and save Autotask connection settings, operationId: setAutotaskSettings, responses: { '200': { description: OK } } }
+  /api/settings/autotask/disconnect:
+    post: { summary: Remove the Autotask connection, operationId: disconnectAutotask, responses: { '200': { description: OK } } }
+  /api/settings/features:
+    get: { summary: Feature toggles, operationId: getFeatures, responses: { '200': { description: OK } } }
+    post: { summary: Update feature toggles, operationId: setFeatures, responses: { '200': { description: OK } } }
+  /api/settings/ticketing:
+    get: { summary: Ticketing settings, operationId: getTicketingSettings, responses: { '200': { description: OK } } }
+    post: { summary: Update ticketing settings, operationId: setTicketingSettings, responses: { '200': { description: OK } } }
+  /api/settings/billing:
+    get: { summary: Billing settings, operationId: getBillingSettings, responses: { '200': { description: OK } } }
+    post: { summary: Update billing settings, operationId: setBillingSettings, responses: { '200': { description: OK } } }
+
+  /api/autotask/picklists:
+    get: { summary: Autotask ticket picklists, operationId: getTicketPicklists, responses: { '200': { description: OK } } }
+  /api/autotask/companytypes:
+    get: { summary: Autotask company type picklist, operationId: getCompanyTypes, responses: { '200': { description: OK } } }
+  /api/autotask/servicefields:
+    get: { summary: Autotask service field picklists, operationId: getServiceFields, responses: { '200': { description: OK } } }
+  /api/autotask/services:
+    get: { summary: Active Autotask services, operationId: getAutotaskServices, responses: { '200': { description: OK } } }
+  /api/autotask/billingcodes:
+    get: { summary: Active Autotask billing codes, operationId: getBillingCodes, responses: { '200': { description: OK } } }
+  /api/autotask/contracts:
+    get:
+      summary: Contracts of an Autotask company
+      operationId: getCompanyContracts
+      parameters:
+        - { name: companyId, in: query, required: true, schema: { type: integer, format: int64 } }
+      responses: { '200': { description: OK } }
+
+  /api/companies:
+    get: { summary: Merged company mapping view, operationId: getCompanies, responses: { '200': { description: OK } } }
+  /api/companies/refresh:
+    post: { summary: Refresh cached company lists, operationId: refreshCompanies, responses: { '200': { description: OK } } }
+  /api/companies/automap:
+    post: { summary: Auto-map companies by name, operationId: automapCompanies, responses: { '200': { description: OK } } }
+  /api/companies/map:
+    post: { summary: Map a company, operationId: mapCompany, responses: { '200': { description: OK } } }
+  /api/companies/unmap:
+    post: { summary: Remove a company mapping, operationId: unmapCompany, responses: { '200': { description: OK } } }
+
+  /api/billing/services:
+    get: { summary: Service catalog with mappings, operationId: getServiceMappings, responses: { '200': { description: OK } } }
+    post: { summary: Save a service mapping, operationId: setServiceMapping, responses: { '200': { description: OK } } }
+  /api/billing/companies:
+    get: { summary: Per-company billing configuration, operationId: getCompanyBilling, responses: { '200': { description: OK } } }
+    post: { summary: Save per-company billing configuration, operationId: setCompanyBilling, responses: { '200': { description: OK } } }
+  /api/billing/companies/remove:
+    post: { summary: Disable billing for a company, operationId: removeCompanyBilling, responses: { '200': { description: OK } } }
+  /api/billing/preview:
+    post: { summary: Billing dry run, operationId: previewBilling, responses: { '200': { description: OK } } }
+  /api/billing/run:
+    post: { summary: Run billing synchronization, operationId: runBilling, responses: { '200': { description: OK } } }
+  /api/billing/history:
+    get: { summary: Billing adjustment history, operationId: getBillingHistory, responses: { '200': { description: OK } } }
+  /api/vspc/subscriptionplans:
+    get: { summary: VSPC subscription plans, operationId: getSubscriptionPlans, responses: { '200': { description: OK } } }
+
+  /api/ticketing/alarms:
+    get: { summary: Alarm templates with ticketing rules, operationId: getAlarmRules, responses: { '200': { description: OK } } }
+  /api/ticketing/alarms/refresh:
+    post: { summary: Refresh alarm templates from VSPC, operationId: refreshAlarms, responses: { '200': { description: OK } } }
+  /api/ticketing/alarms/enable:
+    post: { summary: Enable/disable ticketing for alarms, operationId: enableAlarms, responses: { '200': { description: OK } } }
+  /api/ticketing/links:
+    get: { summary: Recent ticket links, operationId: getTicketLinks, responses: { '200': { description: OK } } }
+  /api/ticketing/poll:
+    post: { summary: Poll alarms now, operationId: pollTickets, responses: { '200': { description: OK } } }

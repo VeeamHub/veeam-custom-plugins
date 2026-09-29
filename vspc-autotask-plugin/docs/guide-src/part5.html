@@ -1,0 +1,299 @@
+<!-- ==================== TICKETING ==================== -->
+<div class="topic">
+<h1 id="ticketing">Configuring Automated Ticketing</h1>
+
+<p class="intro">You can configure Veeam Service Provider Console to send information about triggered
+alarms to Autotask PSA and to create service tickets based on alarm data.</p>
+
+<h2 id="ticketing-prereq">Prerequisites</h2>
+
+<p>Before configuring automated ticketing, check the following prerequisites:</p>
+<ul>
+  <li>Configure Autotask PSA plugin connection. For details, see
+    <a href="#connect">Step 2. Configure Plugin Connection</a>.</li>
+  <li>Enable the <span class="ui">Companies</span> and <span class="ui">Ticketing</span> integration
+    features. For details, see <a href="#enablefeatures">Step 3. Enable Integration
+    Features</a>.</li>
+  <li>Configure integration for the companies for which you want to create tickets automatically.
+    For details, see <a href="#companies">Configuring Companies Integration</a>. Alarms triggered for
+    unmapped companies never create tickets.</li>
+  <li>In Autotask PSA, the queue on which you want to create tickets automatically must exist, and
+    the ticket statuses that you want to use for new and for closed tickets must be available.</li>
+</ul>
+
+<h2 id="ticketsettings">Configuring Ticket Settings</h2>
+
+<p>To configure parameters of tickets created by Veeam Service Provider Console:</p>
+
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Click the <span class="ui">Autotask PSA</span> plugin tile.</li>
+  <li>In the menu on the left, click <span class="ui">Ticketing</span>.</li>
+  <li>At the top of the page, click <span class="ui">Ticket Settings</span> and configure ticketing
+    settings as described in the table below.</li>
+  <li>Click <span class="ui">Save</span>.</li>
+</ol>
+
+<p>Queue, status, priority, source and ticket type values are retrieved from your Autotask PSA
+instance when the window opens. Each drop-down list is searchable.</p>
+
+<table>
+  <thead><tr><th style="width:56mm">Setting</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><span class="ui">Queue</span></td><td>Autotask PSA queue on which tickets will be
+      created.</td></tr>
+    <tr><td><span class="ui">Status for new tickets</span></td><td>Status assigned to a ticket when
+      Veeam Service Provider Console creates it.</td></tr>
+    <tr><td><span class="ui">Status for closed tickets</span></td><td>Status assigned to a ticket
+      when Veeam Service Provider Console closes it because the alarm used to create this ticket was
+      resolved.</td></tr>
+    <tr><td><span class="ui">Priority &mdash; Warning alarms</span></td><td>Priority that must be
+      assigned to tickets created for triggered <em>Warning</em> alarms.</td></tr>
+    <tr><td><span class="ui">Priority &mdash; Error alarms</span></td><td>Priority that must be
+      assigned to tickets created for triggered <em>Error</em> alarms.</td></tr>
+    <tr><td><span class="ui">Source</span></td><td>Optional. Autotask PSA ticket source recorded on
+      created tickets.</td></tr>
+    <tr><td><span class="ui">Ticket type</span></td><td>Optional. Autotask PSA ticket type recorded
+      on created tickets.</td></tr>
+    <tr><td><span class="ui">Delay before ticket (minutes)</span></td><td>Time period after which
+      the ticket for a triggered alarm must be created. An alarm that is resolved within this period
+      never becomes a ticket, which suppresses tickets for transient conditions. Default: 5.</td></tr>
+    <tr><td><span class="ui">Due date offset (hours)</span></td><td>The ticket due date is set to the
+      creation time plus this offset. Autotask PSA requires a due date on most ticket categories.
+      Default: 24.</td></tr>
+    <tr><td><span class="ui">Alarm poll interval (seconds)</span></td><td>Period at which Veeam
+      Service Provider Console is polled for alarm state. Default: 120. Values are limited to the
+      range from 30 to 3600.</td></tr>
+    <tr><td><span class="ui">Close ticket when alarm resolves</span></td><td>When an alarm is
+      resolved in Veeam Service Provider Console, the status of the ticket created for this alarm
+      changes to the status for closed tickets. Enabled by default.</td></tr>
+    <tr><td><span class="ui">Resolve alarm when ticket closes</span></td><td>When a ticket is closed
+      in Autotask PSA, the alarm used to create this ticket is resolved in Veeam Service Provider
+      Console. Enabled by default.</td></tr>
+    <tr><td><span class="ui">Add note on re-trigger</span></td><td>When an alarm that already has an
+      open ticket is triggered again, a ticket note is added to the existing ticket instead of
+      creating a second ticket. Enabled by default.</td></tr>
+    <tr><td><span class="ui">Acknowledged counts as resolved</span></td><td>Alarms acknowledged in
+      Veeam Service Provider Console are processed in the same way as resolved alarms when tickets
+      are closed. Enabled by default.</td></tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>The <span class="ui">Status for new tickets</span> and
+  <span class="ui">Status for closed tickets</span> settings must be set to different Autotask PSA
+  statuses. If both settings use the same status, the plugin cannot distinguish an open ticket from
+  a closed one: every new ticket is reported as already closed, and duplicate tickets are created
+  for the same alarm. Veeam Service Provider Console does not save such a combination, and stops the
+  alarm poll if it is detected.</p>
+</div>
+
+<h2 id="enablealarms">Enabling Alarms</h2>
+
+<p>To enable automatic creation of tickets based on Veeam Service Provider Console alarms:</p>
+
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Click the <span class="ui">Autotask PSA</span> plugin tile.</li>
+  <li>In the menu on the left, click <span class="ui">Ticketing</span>.
+    <p class="substep">Veeam Service Provider Console will display a list of all enabled alarms,
+      except alarms for the <em>Cloud Gateway</em>, <em>Internal</em>, <em>Plugin</em>,
+      <em>Site</em> and <em>User</em> objects.</p>
+  </li>
+  <li>On the <span class="ui">Alarms</span> tab, from the list of alarms, select alarms for which you
+    want to create tickets.
+    <p class="substep">To narrow down the list of alarms, use the
+      <span class="ui">Alarm Name</span> search or the <span class="ui">Status</span> filter.</p>
+  </li>
+  <li>At the top of the list, click <span class="ui">Enable</span>.</li>
+</ol>
+
+<p>To stop creating tickets for an alarm, select the alarm and click
+<span class="ui">Disable</span>. To retrieve the list of alarms from Veeam Service Provider Console
+again, click <span class="ui">Refresh Data</span>.</p>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>Veeam Service Provider Console records the moment when ticketing is enabled for the first time.
+  Alarms that were already triggered before that moment do not create tickets. This prevents a
+  backlog of historical alarms from being reported to your Autotask PSA queue when the integration
+  is enabled.</p>
+</div>
+
+<h2 id="lifecycle">Ticket and Alarm Lifecycle</h2>
+
+<figure>
+<svg viewBox="0 0 720 232" xmlns="http://www.w3.org/2000/svg" font-family="Open Sans, Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="ar3" markerWidth="9" markerHeight="9" refX="8" refY="3.2" orient="auto">
+      <path d="M0,0 L8,3.2 L0,6.4 z" fill="#5a6169"/>
+    </marker>
+    <marker id="ar3r" markerWidth="9" markerHeight="9" refX="8" refY="3.2" orient="auto">
+      <path d="M0,0 L8,3.2 L0,6.4 z" fill="#c8102e"/>
+    </marker>
+  </defs>
+
+  <rect x="4" y="78" width="92" height="52" rx="4" fill="#ffffff" stroke="#00b336" stroke-width="1.5"/>
+  <text x="50" y="98" font-size="10.5" font-weight="600" text-anchor="middle" fill="#232323">Alarm</text>
+  <text x="50" y="116" font-size="10.5" font-weight="600" text-anchor="middle" fill="#232323">triggered</text>
+
+  <rect x="160" y="78" width="92" height="52" rx="4" fill="#fffaf0" stroke="#c47b00" stroke-width="1.5"/>
+  <text x="206" y="100" font-size="10.5" font-weight="600" text-anchor="middle" fill="#232323">Pending</text>
+  <text x="206" y="115" font-size="8.5" text-anchor="middle" fill="#5a6169">delay period</text>
+
+  <rect x="316" y="78" width="92" height="52" rx="4" fill="#f2f8f4" stroke="#00b336" stroke-width="1.5"/>
+  <text x="362" y="100" font-size="10.5" font-weight="600" text-anchor="middle" fill="#232323">Open</text>
+  <text x="362" y="115" font-size="8.5" text-anchor="middle" fill="#5a6169">ticket created</text>
+
+  <rect x="472" y="78" width="92" height="52" rx="4" fill="#f0f2f4" stroke="#5a6169" stroke-width="1.5"/>
+  <text x="518" y="100" font-size="10.5" font-weight="600" text-anchor="middle" fill="#232323">Closed</text>
+  <text x="518" y="115" font-size="8.5" text-anchor="middle" fill="#5a6169">closed status</text>
+
+  <rect x="628" y="78" width="88" height="52" rx="4" fill="#fdf6f7" stroke="#c8102e" stroke-width="1.4"/>
+  <text x="672" y="100" font-size="10" font-weight="600" text-anchor="middle" fill="#c8102e">Autotask</text>
+  <text x="672" y="114" font-size="10" font-weight="600" text-anchor="middle" fill="#c8102e">ticket</text>
+
+  <rect x="160" y="8" width="92" height="34" rx="4" fill="#f7f9fa" stroke="#c8ced4"/>
+  <text x="206" y="30" font-size="10" text-anchor="middle" fill="#5a6169">Cancelled</text>
+
+  <rect x="316" y="176" width="92" height="34" rx="4" fill="#ffffff" stroke="#c8ced4"/>
+  <text x="362" y="198" font-size="10" text-anchor="middle" fill="#5a6169">Note added</text>
+
+  <line x1="96" y1="104" x2="156" y2="104" stroke="#5a6169" stroke-width="1.4" marker-end="url(#ar3)"/>
+  <line x1="252" y1="104" x2="312" y2="104" stroke="#5a6169" stroke-width="1.4" marker-end="url(#ar3)"/>
+  <text x="282" y="96" font-size="8" text-anchor="middle" fill="#8a9198">delay elapsed</text>
+  <line x1="408" y1="104" x2="468" y2="104" stroke="#5a6169" stroke-width="1.4" marker-end="url(#ar3)"/>
+  <text x="438" y="96" font-size="8" text-anchor="middle" fill="#8a9198">alarm resolved</text>
+
+  <line x1="206" y1="78" x2="206" y2="46" stroke="#5a6169" stroke-width="1.4" marker-end="url(#ar3)"/>
+  <text x="262" y="34" font-size="8" fill="#8a9198">alarm resolved within the delay period</text>
+
+  <line x1="362" y1="130" x2="362" y2="172" stroke="#5a6169" stroke-width="1.4" marker-end="url(#ar3)"/>
+  <text x="372" y="158" font-size="8" fill="#8a9198">alarm triggered again</text>
+
+  <line x1="564" y1="94" x2="624" y2="94" stroke="#c8102e" stroke-width="1.4" marker-end="url(#ar3r)"/>
+  <line x1="624" y1="116" x2="568" y2="116" stroke="#c8102e" stroke-width="1.4" marker-end="url(#ar3r)"/>
+  <text x="672" y="149" font-size="8" text-anchor="middle" fill="#8a9198">closing the ticket</text>
+  <text x="672" y="163" font-size="8" text-anchor="middle" fill="#8a9198">resolves the alarm</text>
+</svg>
+<figcaption><b>Ticket states.</b> States are displayed on the
+<span class="ui">Recent Ticket Activity</span> tab. A ticket also enters the
+<span class="ui">Error</span> state if Autotask PSA rejects the create or update operation; Veeam
+Service Provider Console retries the operation at the next alarm poll.</figcaption>
+</figure>
+
+<p>Veeam Service Provider Console polls alarm state at the configured interval and reconciles both
+sides at every poll:</p>
+<ul>
+  <li>An alarm triggered for a mapped company on an enabled alarm enters the
+    <span class="ui">Pending</span> state. If the alarm is resolved before the delay period elapses,
+    it changes to the <span class="ui">Cancelled</span> state and no ticket is created.</li>
+  <li>After the delay period elapses, a ticket is created in the configured queue with the status for
+    new tickets, the priority that matches the alarm severity, and a due date offset from the
+    creation time. The ticket contains the company, the alarm name and the affected object.</li>
+  <li>If the same alarm is triggered again while its ticket is open, a note is added to the existing
+    ticket instead of creating a second ticket.</li>
+  <li>When the alarm is resolved, or acknowledged if the
+    <span class="ui">Acknowledged counts as resolved</span> setting is enabled, the status of the
+    ticket changes to the status for closed tickets.</li>
+  <li>Conversely, when you close the ticket in Autotask PSA, Veeam Service Provider Console resolves
+    the alarm used to create this ticket.</li>
+</ul>
+
+<p>The synchronization period for these actions is equal to the alarm poll interval, so a change
+made on either side is reflected on the other side within one poll. For details, see
+<a href="#refresh">Refreshing Data</a>.</p>
+
+<h2 id="ticketactivity">Recent Ticket Activity</h2>
+
+<p>The <span class="ui">Recent Ticket Activity</span> tab of the
+<span class="ui">Ticketing</span> page displays the operations performed by the ticket engine. Use
+this tab to check that the integration works as expected.</p>
+
+<table class="tight">
+  <thead><tr><th style="width:36mm">Column</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><span class="ui">Status</span></td><td>State of the link between the alarm and the
+      ticket: <span class="ui">Pending</span>, <span class="ui">Open</span>,
+      <span class="ui">Closed</span>, <span class="ui">Cancelled</span> or
+      <span class="ui">Error</span>.</td></tr>
+    <tr><td><span class="ui">Ticket</span></td><td>Number of the Autotask PSA ticket.</td></tr>
+    <tr><td><span class="ui">Company</span></td><td>Company for which the alarm was triggered.</td></tr>
+    <tr><td><span class="ui">Alarm</span></td><td>Alarm that was triggered.</td></tr>
+    <tr><td><span class="ui">Object</span></td><td>Managed object associated with the triggered
+      alarm.</td></tr>
+    <tr><td><span class="ui">Updated</span></td><td>Time when the state last changed.</td></tr>
+    <tr><td><span class="ui">Message</span></td><td>Last reported status, or the error message if the
+      state is <span class="ui">Error</span>.</td></tr>
+  </tbody>
+</table>
+
+<p>To narrow down the list, use the search field to find a company, alarm, object or ticket number,
+and the <span class="ui">Status</span> filter to display a specific state. To run an alarm poll
+immediately instead of waiting for the configured interval, click
+<span class="ui">Poll Alarms Now</span>. Veeam Service Provider Console will report how many alarm
+events were processed and how many tickets were created, closed and updated with notes.</p>
+</div>
+
+<!-- ==================== REFRESHING DATA ==================== -->
+<div class="topic">
+<h1 id="refresh">Refreshing Data</h1>
+
+<p class="intro">After you configure integration features, the data between Veeam Service Provider
+Console and Autotask PSA will be synchronized automatically. To synchronize the necessary data
+immediately, you can refresh it manually.</p>
+
+<h3>Synchronization Intervals</h3>
+
+<table>
+  <thead><tr><th style="width:56mm">Data</th><th style="width:36mm">Interval</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Company lists from both applications</td><td>Every 4 hours</td>
+      <td>Used on the <span class="ui">Companies</span> page and in the mapping windows.</td></tr>
+    <tr><td>Alarm state and ticket reconciliation</td><td>Every 120 seconds</td>
+      <td>Configured by the <span class="ui">Alarm poll interval (seconds)</span> setting in the
+        <span class="ui">Ticket Settings</span> window, from 30 to 3600 seconds.</td></tr>
+    <tr><td>Billing reconciliation</td><td>Once a day</td>
+      <td>At the hour configured by the <span class="ui">Daily sync hour (UTC)</span> setting on the
+        <span class="ui">Product Mapping</span> tab. Default: 1.</td></tr>
+  </tbody>
+</table>
+
+<h3>Refreshing Data Manually</h3>
+
+<p>To synchronize the necessary data immediately, you can refresh it manually:</p>
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Click the <span class="ui">Autotask PSA</span> plugin tile.</li>
+  <li>In the menu on the left, click the section for which you want to refresh data:
+    <span class="ui">Companies</span>, <span class="ui">Ticketing</span>,
+    <span class="ui">Billing</span> (<span class="ui">Contracts</span> tab).</li>
+  <li>At the top of the page, click <span class="ui">Refresh Data</span>.</li>
+</ol>
+
+<p>Every <span class="ui">Refresh Data</span> command displays the time of the last synchronization
+for the corresponding page.</p>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>Two more commands are available in addition to <span class="ui">Refresh Data</span>:</p>
+  <ul>
+    <li><span class="ui">Poll Alarms Now</span> on the
+      <span class="ui">Ticketing &gt; Recent Ticket Activity</span> tab runs a full ticket
+      reconciliation immediately.</li>
+    <li><span class="ui">Sync Now</span> on the <span class="ui">Billing &gt; Contracts</span> tab
+      runs billing reconciliation immediately. For details, see
+      <a href="#syncbilling">Previewing and Running Synchronization</a>.</li>
+  </ul>
+</div>
+</div>

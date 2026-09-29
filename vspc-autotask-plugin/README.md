@@ -78,6 +78,28 @@ The plugin is a self-contained service that Veeam Service Provider Console start
 
 Check the **Activity** page first, then the log files in `C:\ProgramData\VspcAutotaskPlugin\logs` (a failed startup is written to `startup-error.log`). The Troubleshooting section of the Integration Guide lists common issues and their resolution. For bugs and feature requests, open an issue in this repository.
 
+## Source code and building
+
+The source the package is built from lives next to it in this directory:
+
+| Path | Contents |
+|---|---|
+| `src/VspcAutotaskPlugin/` | ASP.NET Core (.NET 8) plugin service: VSPC and Autotask PSA REST clients, gRPC plugin-host integration (contracts in `Protos/`), company/billing/ticket sync engines, background workers, SQLite storage with DPAPI-protected secrets. |
+| `src/UI/` | Plugin UI (React, Veeam UIKit, webpack). |
+| `tests/VspcAutotaskPlugin.Tests/` | Unit tests (54). |
+| `packaging/` | Plugin package definition (manifest, nuspec, REST specification, page config) and the packaging script. See `packaging/README.md`. |
+| `docs/guide-src/` | Sources and build pipeline for the Integration Guide. |
+| `build.ps1`, `build.bat` | One-step build: runs the unit tests, then builds the UI, publishes the service, packs and signs the package. |
+
+Prerequisites: Windows with PowerShell, the .NET 8 SDK, Node.js 20, and the Veeam UIKit packages from the Veeam Service Provider Console plugin SDK ([Veeam KB4311](https://www.veeam.com/kb4311), Veeam account required). Copy the SDK's UI kit tarballs into `src/UI/vendor/` as described in `src/UI/vendor/README.md`; they are not redistributed in this repository.
+
+```powershell
+.\build.ps1
+# -> build\VspcAutotaskPlugin.<version>.nupkg
+```
+
+VSPC requires signed packages. On the first run the script generates a self-signed code-signing certificate (`packaging/plugin/sign.p12`, excluded from the repository); pass `-CertPath` and `-CertPassword` to sign with your own certificate. To rebuild the Integration Guide, start Chrome or Edge with `--headless=new --remote-debugging-port=9222` and run `docs/guide-src/build.ps1`.
+
 ## License
 
 Distributed under the MIT License of this repository (see [LICENSE](../LICENSE)).

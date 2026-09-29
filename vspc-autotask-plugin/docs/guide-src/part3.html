@@ -1,0 +1,265 @@
+<!-- ==================== INSTALLING THE PLUGIN ==================== -->
+<div class="topic">
+<h1 id="installing">Installing the Autotask PSA Plugin</h1>
+
+<p class="intro">The Autotask PSA integration is delivered as a custom application plugin. You
+upload the plugin package in Veeam Service Provider Console, and Veeam Service Provider Console
+hosts the plugin service and serves the plugin UI inside the portal.</p>
+
+<h2 id="install">Installing the Plugin</h2>
+
+<p>To install the Autotask PSA plugin:</p>
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console as a <span class="ui">Portal Administrator</span>.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Click <span class="ui">Upload Custom Plugin</span> and select the
+    <code>VspcAutotaskPlugin.&lt;version&gt;.nupkg</code> package.
+    <p class="substep">Veeam Service Provider Console validates the package signature, deploys the
+      plugin and starts the plugin service. Installation progress is reported in the notification
+      area.</p>
+  </li>
+  <li>Wait until installation completes. The <span class="ui">Autotask PSA</span> plugin tile
+    appears on the <span class="ui">Catalog</span> page.</li>
+  <li>Click the <span class="ui">Autotask PSA</span> plugin tile to open the plugin.</li>
+</ol>
+
+<p>At installation time, Veeam Service Provider Console registers the plugin and issues it a Veeam
+Service Provider Console REST API key automatically. Veeam Service Provider Console credentials are
+not requested at any point.</p>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>The plugin package must be signed. If the upload is rejected because of the package signature,
+  sign the package with a code signing certificate trusted by the Veeam Service Provider Console
+  server.</p>
+</div>
+
+<h2 id="upgrade">Upgrading the Plugin</h2>
+
+<p>You can upgrade the plugin from the <span class="ui">Catalog</span> page. Upgrade preserves all
+plugin data.</p>
+
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console as a <span class="ui">Portal Administrator</span>.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Click <span class="ui">Upload Custom Plugin</span> and select the newer plugin package.
+    <p class="substep">Because the plugin identifier does not change between versions, Veeam Service
+      Provider Console replaces the installed version instead of adding a second plugin.</p>
+  </li>
+  <li>Open the plugin and check the integration status. For details, see
+    <a href="#pluginstatus">Plugin Status Page</a>.</li>
+</ol>
+
+<p>Company mappings, service mappings, per-company billing configuration, ticket links, ticketing
+and billing settings, the Autotask PSA connection and the activity log are preserved during an
+upgrade, because they are stored in <code>C:\ProgramData\VspcAutotaskPlugin</code> and not in the
+package folder that the upgrade replaces.</p>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>Tickets that are open at the moment of the upgrade are not affected. The alarm poller resumes
+  from the state recorded in the plugin database, so an alarm that already has a ticket does not
+  receive a second one.</p>
+</div>
+
+<h2 id="remove">Removing the Plugin</h2>
+
+<p>To remove the Autotask PSA plugin:</p>
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console as a <span class="ui">Portal Administrator</span>.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Remove the <span class="ui">Autotask PSA</span> plugin.</li>
+</ol>
+
+<p>Before the plugin is removed, Veeam Service Provider Console instructs the plugin to purge its
+local data. The plugin deletes its database and stored credentials in response.</p>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>When you remove the plugin, consider that:</p>
+  <ul>
+    <li>Nothing is deleted in Autotask PSA. Tickets, contracts, contract services and services
+      created by the plugin remain in place.</li>
+    <li>The links between Veeam Service Provider Console alarms and Autotask PSA tickets are stored
+      in the plugin database and are lost when plugin data is purged. If you install the plugin
+      again, previously created tickets are no longer updated.</li>
+  </ul>
+</div>
+</div>
+
+<!-- ==================== ENABLING INTEGRATION ==================== -->
+<div class="topic">
+<h1 id="enabling">Enabling Autotask PSA Integration</h1>
+
+<p class="intro">To allow Veeam Service Provider Console to communicate with Autotask PSA, you must
+configure the application plugin and enable integration features.</p>
+
+<h3>Enabling Autotask PSA Integration</h3>
+
+<p>To enable integration with Autotask PSA, perform the following steps:</p>
+<ol class="steps">
+  <li><a href="#apikeys">Obtain Autotask PSA API credentials</a>.</li>
+  <li><a href="#connect">Configure plugin connection</a>.</li>
+  <li><a href="#enablefeatures">Enable integration features</a>.</li>
+</ol>
+
+<h2 id="apikeys">Step 1. Obtain Autotask API Credentials</h2>
+
+<p>In Autotask PSA, create an API-only user and save its user name, secret and integration
+code:</p>
+
+<ol class="steps">
+  <li>Log in to Autotask PSA with an account that is allowed to create API users.</li>
+  <li>In the navigation menu on the left, click <span class="ui">Admin</span> and select
+    <span class="ui">Organization Settings &amp; Users</span>.
+    <p class="substep">In some Autotask PSA versions, this menu item is named
+      <span class="ui">Account Settings &amp; Users</span>.</p>
+  </li>
+  <li>Expand <span class="ui">Resources/Users (HR)</span> and click
+    <span class="ui">Resources/Users</span>.</li>
+  <li>Click <span class="ui">New</span> and select <span class="ui">New API User</span>.</li>
+  <li>Specify the <span class="ui">First Name</span>, <span class="ui">Last Name</span> and
+    <span class="ui">Email Address</span> of the API user.</li>
+  <li>From the <span class="ui">Security Level</span> drop-down list, select
+    <span class="ui">API User (system)</span>.</li>
+  <li>Under <span class="ui">Credentials</span>, click <span class="ui">Generate Key</span> and
+    <span class="ui">Generate Secret</span>.
+    <p class="substep">The generated key is the API user name that you specify in the plugin. The
+      generated secret is the password.</p>
+  </li>
+  <li>Under <span class="ui">API Tracking Identifier</span>, select
+    <span class="ui">Custom (Internal Integration)</span> and type a name for the integration, for
+    example <code>Veeam Service Provider Console</code>.</li>
+  <li>Click <span class="ui">Save &amp; Close</span>.</li>
+  <li>Copy and save the user name, the secret and the tracking identifier value.
+    <p class="substep">The secret cannot be displayed again after you close the form.</p>
+  </li>
+</ol>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>Treat the secret as a password. The plugin stores it encrypted with Windows DPAPI on the Veeam
+  Service Provider Console server and never returns it to the browser, but anyone who holds the
+  three values can access your Autotask PSA instance.</p>
+</div>
+
+<h3>Autotask PSA Permissions</h3>
+
+<p>The API user must be able to access the following Autotask PSA entities.</p>
+
+<table class="tight">
+  <thead><tr><th style="width:46mm">Entity</th><th style="width:26mm">Access</th><th>Used for</th></tr></thead>
+  <tbody>
+    <tr><td>Companies</td><td>Read</td><td>Company list and company type for mapping</td></tr>
+    <tr><td>Contracts</td><td>Read</td><td>Contracts available for a mapped company</td></tr>
+    <tr><td>Services</td><td>Read, create</td><td>Mapping to existing services, and creating new
+      services from Veeam Service Provider Console services</td></tr>
+    <tr><td>Contract services and adjustments</td><td>Read, create</td><td>Attaching services to a
+      contract and maintaining billed quantities</td></tr>
+    <tr><td>Billing codes</td><td>Read</td><td>Allocation code assigned to services created by the
+      plugin</td></tr>
+    <tr><td>Tickets and ticket notes</td><td>Read, create, update</td><td>Automated ticketing and
+      ticket state synchronization</td></tr>
+  </tbody>
+</table>
+
+<h2 id="connect">Step 2. Configure Plugin Connection</h2>
+
+<p>Configure Autotask PSA plugin connection in Veeam Service Provider Console:</p>
+
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Click the <span class="ui">Autotask PSA</span> plugin tile.</li>
+  <li>In the <span class="ui">Autotask PSA Integration</span> window, specify connection settings:
+    <ul>
+      <li>In the <span class="ui">API user (email)</span> field, type the user name generated for
+        the API user at <a href="#apikeys">Step 1. Obtain Autotask API Credentials</a>.</li>
+      <li>In the <span class="ui">Secret</span> field, type the generated secret.</li>
+      <li>In the <span class="ui">Integration code</span> field, type the value of the custom API
+        tracking identifier.</li>
+    </ul>
+    <p class="substep">The <span class="ui">Zone</span> field is read-only. Veeam Service Provider
+      Console detects the Autotask PSA zone for the specified API user automatically and fills in
+      the field after a successful connection.</p>
+  </li>
+  <li>Click <span class="ui">Connect</span>.</li>
+  <li>In the <span class="ui">Autotask PSA Integration</span> window, check integration status.
+    <p class="substep">A successfully established connection will show the
+      <span class="ui">Healthy</span> integration status, and the window will close.</p>
+  </li>
+</ol>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>The <span class="ui">Autotask PSA Integration</span> window opens automatically the first time
+  you open the plugin while no Autotask PSA connection is configured. You can open it at any time
+  on the <span class="ui">Plugin Status</span> page: next to <span class="ui">Autotask zone</span>,
+  click <span class="ui">Change</span>.</p>
+  <p>If the plugin already stores a secret, the <span class="ui">Secret</span> field displays
+  <span class="ui">(unchanged)</span>. Leave the field empty to keep the stored secret, or type a
+  new value to replace it.</p>
+</div>
+
+<h3>Disconnecting Autotask PSA Plugin</h3>
+
+<p>If you no longer want to manage a Veeam Service Provider Console server in Autotask PSA, you can
+remove the plugin connection. After you disconnect the Autotask PSA plugin, all integration between
+Veeam Service Provider Console and Autotask PSA will be disabled: billing synchronization and
+ticket creation stop.</p>
+
+<p>To disconnect the Autotask PSA plugin:</p>
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Click the <span class="ui">Autotask PSA</span> plugin tile.</li>
+  <li>In the menu on the left, click <span class="ui">Plugin Status</span>.</li>
+  <li>Next to <span class="ui">Autotask zone</span>, click <span class="ui">Change</span>.</li>
+  <li>In the <span class="ui">Autotask PSA Integration</span> window, click
+    <span class="ui">Disconnect</span>.</li>
+  <li>In the confirmation window, click <span class="ui">Yes</span>.</li>
+</ol>
+
+<p>Disconnecting removes the stored Autotask PSA credentials. Company mappings, service mappings
+and ticket links are preserved, so if you connect the same Autotask PSA instance again, the
+configuration is restored without remapping.</p>
+
+<h2 id="enablefeatures">Step 3. Enable Integration Features</h2>
+
+<p>Select information you want to share between Veeam Service Provider Console and Autotask PSA,
+and enable the necessary features:</p>
+
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Click the <span class="ui">Autotask PSA</span> plugin tile.</li>
+  <li>In the menu on the left, click <span class="ui">Plugin Status</span>.</li>
+  <li>In the <span class="ui">Integration Settings</span> section, set toggles next to the necessary
+    integration features to <span class="ui">On</span>.
+    <p class="substep">You can also click the <span class="ui">Enable All</span> link to enable all
+      integration features. For details on integration features, see
+      <a href="#features">Integration Features</a>.</p>
+  </li>
+</ol>
+
+<p>Integration features are applied immediately. There is no separate save operation.</p>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>Toggles are unavailable until the Autotask PSA connection is configured. Until then, the
+  <span class="ui">Integration Settings</span> section displays the
+  <span class="ui">Connect Autotask to enable integration features</span> message.</p>
+</div>
+</div>
