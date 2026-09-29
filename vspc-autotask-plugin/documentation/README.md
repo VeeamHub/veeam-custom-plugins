@@ -6,13 +6,13 @@ Integrates **Veeam Service Provider Console 9.2 and 9.3** with **Datto Autotask 
 >
 > This plugin, its package and its documentation were created with AI tools (Anthropic's Claude Code), with human review and live testing by the author. As with every plugin in this repository, it is a community contribution: it was not created by Veeam R&D, has not been validated by Veeam QA, and is not supported by Veeam Customer Support. Evaluate it in a test environment first, and use the billing **Preview** (dry run) before the first live synchronization.
 
-## Contents of this directory
+## Layout of the plugin directory
 
-| File | Description |
+| Path | Contents |
 |---|---|
 | `VspcAutotaskPlugin.1.5.6.nupkg` | Signed, self-contained plugin package (win-x64). Upload it through the Veeam Service Provider Console Catalog. |
-| [`docs/Autotask-PSA-Integration-Guide.pdf`](docs/Autotask-PSA-Integration-Guide.pdf) | Integration guide for service providers: requirements, installation, configuration of every feature, monitoring, troubleshooting, terminology and the plugin REST endpoints. |
-| [`docs/Autotask-PSA-Integration-Guide.html`](docs/Autotask-PSA-Integration-Guide.html) | The same guide as a single self-contained HTML page. |
+| `documentation/` | This README and the Integration Guide for service providers, as [PDF](Autotask-PSA-Integration-Guide.pdf) and as a single self-contained [HTML page](Autotask-PSA-Integration-Guide.html): requirements, installation, configuration of every feature, monitoring, troubleshooting, terminology and the plugin REST endpoints. |
+| `source/` | The complete project the package is built from. See [Source code and building](#source-code-and-building). |
 
 Package SHA-256: `F53ABE4D5DE18E214C8044EA17B5BF2CE49DD340B5D586FA6E7B912D773B1264`
 
@@ -57,7 +57,7 @@ The plugin is a self-contained service that Veeam Service Provider Console start
 1. **Obtain Autotask PSA API credentials.** In Autotask PSA, create an API-only user with the *API User (system)* security level, generate its key and secret, and create a *Custom (Internal Integration)* API tracking identifier.
 2. **Configure the plugin connection.** The **Autotask PSA Integration** window opens automatically the first time you open the plugin. Enter the API user, secret and integration code and click **Connect**; the zone is detected automatically. The window is available later on the **Plugin Status** page, via **Change** next to *Autotask zone*, and also offers **Disconnect**.
 3. **Enable integration features.** On the **Plugin Status** page, switch on **Companies**, **Ticketing** and **Billing**, or click **Enable All**. Changes apply immediately.
-4. Continue with company mapping, product mapping and contracts, and ticket settings as described in the [Integration Guide](docs/Autotask-PSA-Integration-Guide.pdf).
+4. Continue with company mapping, product mapping and contracts, and ticket settings as described in the [Integration Guide](Autotask-PSA-Integration-Guide.pdf).
 
 ## Stored data and security
 
@@ -80,26 +80,27 @@ Check the **Activity** page first, then the log files in `C:\ProgramData\VspcAut
 
 ## Source code and building
 
-The source the package is built from lives next to it in this directory:
+The `source/` folder contains the complete project the package is built from:
 
-| Path | Contents |
+| Path (under `source/`) | Contents |
 |---|---|
 | `src/VspcAutotaskPlugin/` | ASP.NET Core (.NET 8) plugin service: VSPC and Autotask PSA REST clients, gRPC plugin-host integration (contracts in `Protos/`), company/billing/ticket sync engines, background workers, SQLite storage with DPAPI-protected secrets. |
 | `src/UI/` | Plugin UI (React, Veeam UIKit, webpack). |
 | `tests/VspcAutotaskPlugin.Tests/` | Unit tests (54). |
-| `packaging/` | Plugin package definition (manifest, nuspec, REST specification, page config) and the packaging script. See `packaging/README.md`. |
+| `packaging/` | Plugin package definition (manifest, nuspec, REST specification, page config) and the packaging script. See [`packaging/README.md`](../source/packaging/README.md). |
 | `docs/guide-src/` | Sources and build pipeline for the Integration Guide. |
 | `build.ps1`, `build.bat` | One-step build: runs the unit tests, then builds the UI, publishes the service, packs and signs the package. |
 
-Prerequisites: Windows with PowerShell, the .NET 8 SDK, Node.js 20, and the Veeam UIKit packages from the Veeam Service Provider Console plugin SDK ([Veeam KB4311](https://www.veeam.com/kb4311), Veeam account required). Copy the SDK's UI kit tarballs into `src/UI/vendor/` as described in `src/UI/vendor/README.md`; they are not redistributed in this repository.
+Prerequisites: Windows with PowerShell, the .NET 8 SDK, Node.js 20, and the Veeam UIKit packages from the Veeam Service Provider Console plugin SDK ([Veeam KB4311](https://www.veeam.com/kb4311), Veeam account required). Copy the SDK's UI kit tarballs into `source/src/UI/vendor/` as described in [`src/UI/vendor/README.md`](../source/src/UI/vendor/README.md); they are not redistributed in this repository.
 
 ```powershell
+cd source
 .\build.ps1
 # -> build\VspcAutotaskPlugin.<version>.nupkg
 ```
 
-VSPC requires signed packages. On the first run the script generates a self-signed code-signing certificate (`packaging/plugin/sign.p12`, excluded from the repository); pass `-CertPath` and `-CertPassword` to sign with your own certificate. To rebuild the Integration Guide, start Chrome or Edge with `--headless=new --remote-debugging-port=9222` and run `docs/guide-src/build.ps1`.
+VSPC requires signed packages. On the first run the script generates a self-signed code-signing certificate (`source/packaging/plugin/sign.p12`, excluded from the repository); pass `-CertPath` and `-CertPassword` to sign with your own certificate. To rebuild the Integration Guide, start Chrome or Edge with `--headless=new --remote-debugging-port=9222`, run `source/docs/guide-src/build.ps1`, and copy the resulting PDF and `guide.html` into `documentation/`.
 
 ## License
 
-Distributed under the MIT License of this repository (see [LICENSE](../LICENSE)).
+Distributed under the MIT License of this repository (see [LICENSE](../../LICENSE)).
