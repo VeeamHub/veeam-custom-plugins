@@ -1,0 +1,154 @@
+﻿syntax = "proto3";
+
+option csharp_namespace = "Veeam.AC.Service.Users";
+
+import "google/protobuf/timestamp.proto";
+/**
+ * Service for managing user details and actions for the application.
+ */
+service UserService {
+	// Retrieve user information based on user ID or instance UID.
+	rpc getUser (UserRequest) returns (GetUserReply);
+	// Retrieve a list of all users with their corresponding information.
+	rpc getAllUsers (GetAllUsersRequest) returns (GetAllUsersReply);
+	// Enable a user account based on user ID or instance UID.
+	rpc enableUser (UserRequest) returns (UserActionReply);
+	// Disable a user account based on user ID or instance UID.
+	rpc disableUser (UserRequest) returns (UserActionReply);
+}
+
+/**
+ * Request message for user-specific actions by ID or instance UID.
+ */
+message UserRequest {
+	string pluginId = 1; // UUID of plugin.
+	oneof idValue
+	{
+		int32 id = 2; // Unique identifier of the user.
+		string instanceUid = 3; // Instance unique identifier for the user.
+	}
+}
+
+/**
+ * Reply message returning user information.
+ */
+message GetUserReply {
+	UserInfo user = 1; // The user information details.
+}
+
+/**
+ * Request message for retrieving all users.
+ */
+message GetAllUsersRequest {
+	string pluginId = 1; // UUID of plugin.
+	// number of users to skip before start returning entries.
+	int32 skip = 2; 
+	// max number of users to return.
+	int32 limit = 3;
+}
+
+/**
+ * Reply message containing a list of users and their info.
+ */
+message GetAllUsersReply {
+	repeated UserInfo users = 1; // List of user information records.
+	int32 total = 2;
+}
+
+/**
+ * Reply message indicating the outcome of a user action.
+ */
+message UserActionReply {
+	bool success = 1; // Indicates whether the action was successful.
+}
+
+/**
+ * Represents an information record for a single user.
+ */
+message UserInfo {
+	int32 id = 1; // Unique identifier of the user.
+	string instanceUid = 2; // Instance unique identifier for the user.
+	string firstName = 3; // First name of the user.
+	string lastName = 4; // Last name of the user.
+	string name = 5; // Full name of the user.
+	string address = 6; // Address of the user.
+	string email = 7; // Email address of the user.
+	string phone = 8; // Phone number of the user.
+	UserTitle title = 9; // Title of the user.
+	UserRole role = 10; // Role of the user within the organization.
+	UserStatus status = 11; // Current status of the user account.
+	google.protobuf.Timestamp lastActiveDate = 12; // Last active date of the user.
+	bool sendInvoice = 13; // Indicates if the user should receive invoices.
+	bool requireChangePassword = 14; // Indicates if the user is required to change their password.
+	bool isOrganizationEnabled = 15; // Indicates if the user's organization is enabled.
+	UserCreationSource creationSource = 16; // Source from which the user account was created.
+	UserMfaPolicyStatus mfaPolicyStatus = 17; // MFA policy status for the user.
+	string cloudUserUid = 18; // Cloud user unique identifier.
+	string cloudAgentUid = 19; // Cloud agent unique identifier.
+	int32 organizationId = 20; // Identifier for the organization the user belongs to.
+	string organizationUid = 21; // Unique identifier for the user's organization.
+}
+
+/**
+ * Enum denoting user status options.
+ */
+enum UserStatus {
+	unknownStatus = 0; // Unknown status.
+	enabled = 1;       // User account is enabled.
+	disabled = 2;      // User account is disabled.
+}
+
+/**
+ * Enum specifying possible user titles.
+ */
+enum UserTitle {
+	unknownTitle = 0; // Title is unknown.
+	mr = 1;           // Title "Mr."
+	miss = 2;         // Title "Miss."
+	mrs = 3;          // Title "Mrs."
+	ms = 4;           // Title "Ms."
+}
+
+/**
+ * Enum representing various user roles within the system.
+ */
+enum UserRole {
+	unknownRole = 0; // Role is unknown.
+	administrator = 1; // Full system administrator role.
+	companyLocationAdministrator = 2; // Company location specific administrator.
+	companyLocationUser = 3; // Company location specific user.
+	companyOwner = 4; // Owner of the company.
+	finance = 5; // Financial operations role.
+	subtenant = 6; // Subtenant user role.
+	operator = 7; // System operator role.
+	resellerOwner = 8; // Owner of the reseller.
+	resellerOperator = 9; // Operations role within a reseller company.
+	resellerUser = 10; // Standard user within a reseller company.
+	resellerFinance = 11; // Financial role for resellers.
+	resellerAdministrator = 12; // Administrator of the reseller company.
+	cloudConnectAdministrator = 13; // Administrator role specific to cloud connections.
+	companyAdministrator = 14; // General company administrator.
+	readonlyOperator = 15; // Operator with read-only access.
+	companyTenant = 16; // Role designated for company tenants.
+}
+
+/**
+ * Enum for indicating user account creation sources.
+ */
+enum UserCreationSource {
+	unknownCreationSource = 0; // Creation source is unknown.
+	ad = 1; // Active Directory as the source.
+	win = 2; // Windows environment as the source.
+	vspc = 3; // Veeam Service Provider Console as the source.
+	vbr = 4; // Veeam Backup & Replication as the source.
+	vcd = 5; // Veeam Cloud Director as the source.
+}
+
+/**
+ * Enum for Multi-Factor Authentication policies.
+ */
+enum UserMfaPolicyStatus {
+	mfaDisabled = 0; // MFA is disabled.
+	mfaEnabled = 1; // MFA is enabled but not enforced.
+	mfaEnforced = 2; // MFA is enforced for the user.
+}

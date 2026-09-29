@@ -1,0 +1,487 @@
+<!-- ==================== COMPANIES ==================== -->
+<div class="topic">
+<h1 id="companies">Configuring Companies Integration</h1>
+
+<p class="intro">You can select companies whose data you want to share between Veeam Service
+Provider Console and Autotask PSA. To start sharing data of managed companies, you must configure
+mapping in Veeam Service Provider Console. Mapping enables further integration: only mapped
+companies are billed, and only mapped companies generate tickets.</p>
+
+<h2 id="companies-prereq">Prerequisites</h2>
+
+<p>Before configuring integration of managed companies, check the following prerequisites:</p>
+<ul>
+  <li>Configure Autotask PSA plugin connection. For details, see
+    <a href="#connect">Step 2. Configure Plugin Connection</a>.</li>
+  <li>Enable the <span class="ui">Companies</span> integration feature. For details, see
+    <a href="#enablefeatures">Step 3. Enable Integration Features</a>.</li>
+  <li>The companies must already exist both in Veeam Service Provider Console and in Autotask PSA.
+    For details, see <a href="#limitations">Considerations and Limitations</a>.</li>
+</ul>
+
+<h2 id="companiespage">Companies Page</h2>
+
+<p>To open the page, click the <span class="ui">Autotask PSA</span> plugin tile in
+<span class="ui">Configuration &gt; Catalog</span>, and then click
+<span class="ui">Companies</span> in the menu on the left.</p>
+
+<p>Veeam Service Provider Console will display a list of all companies managed in Veeam Service
+Provider Console, along with the Autotask PSA company that each of them is mapped to.</p>
+
+<h3>Columns</h3>
+<table class="tight">
+  <thead><tr><th style="width:56mm">Column</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><span class="ui">Status</span></td><td>Mapping status of the company:
+      <span class="ui">Mapped</span> or <span class="ui">Unmapped</span>.</td></tr>
+    <tr><td><span class="ui">Autotask Company</span></td><td>Name of the mapped Autotask PSA
+      company. A mapping created by automatic matching is marked
+      <span class="ui">(auto)</span>.</td></tr>
+    <tr><td><span class="ui">Autotask Company ID</span></td><td>Numeric identifier of the Autotask
+      PSA company. Autotask PSA reserves the identifier <code>0</code> for the record of your own
+      organization, which is a valid value.</td></tr>
+    <tr><td><span class="ui">Type</span></td><td>Type of the company configured in Autotask PSA, for
+      example <em>Customer</em> or <em>Prospect</em>.</td></tr>
+    <tr><td><span class="ui">Veeam Service Provider Console Company</span></td><td>Name of the
+      company configured in Veeam Service Provider Console.</td></tr>
+  </tbody>
+</table>
+
+<h3>Filters</h3>
+<p>To narrow down the list of companies, you can apply the following filters.</p>
+<table class="tight">
+  <thead><tr><th style="width:56mm">Filter</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><span class="ui">Company Name</span></td><td>Search companies by name. The list is
+      filtered as you type.</td></tr>
+    <tr><td><span class="ui">Status</span></td><td>Limit the list of companies by mapping status:
+      <span class="ui">Mapped</span>, <span class="ui">Unmapped</span>,
+      <span class="ui">In progress</span>, <span class="ui">Error</span>.</td></tr>
+  </tbody>
+</table>
+
+<h3>Commands</h3>
+<p>All mapping operations are performed on the companies that you select in the list. The list does
+not contain per-row action links.</p>
+<table class="tight">
+  <thead><tr><th style="width:56mm">Command</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><span class="ui">Map to</span></td><td>Map the selected company. Available when exactly
+      one unmapped company is selected.</td></tr>
+    <tr><td><span class="ui">Remove Mapping</span></td><td>Remove mapping of the selected companies.
+      Available when the selection contains at least one mapped company.</td></tr>
+    <tr><td><span class="ui">Map Companies Automatically</span></td><td>Match unmapped companies by
+      name. For details, see <a href="#automap">Mapping Companies Automatically</a>.</td></tr>
+    <tr><td><span class="ui">Refresh Data</span></td><td>Retrieve both company lists from Veeam
+      Service Provider Console and Autotask PSA. The command displays the time of the last
+      synchronization.</td></tr>
+  </tbody>
+</table>
+
+<h2 id="automap">Mapping Companies Automatically</h2>
+
+<p>Select this method if names of companies you manage in Veeam Service Provider Console are same or
+similar to their names in Autotask PSA.</p>
+
+<p>To map companies automatically:</p>
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Click the <span class="ui">Autotask PSA</span> plugin tile.</li>
+  <li>In the menu on the left, click <span class="ui">Companies</span>.</li>
+  <li>At the top of the list, click <span class="ui">Map Companies Automatically</span>.
+    <p class="substep">Veeam Service Provider Console will automatically detect companies in
+      Autotask PSA whose names are the same as the names of companies configured in Veeam Service
+      Provider Console, and will map them.</p>
+  </li>
+  <li>In the <span class="ui">Suggested Matches</span> window, review the companies that could not
+    be mapped automatically, and click a candidate to map the company to it.
+    <p class="substep">Each candidate is displayed with a match percentage.</p>
+  </li>
+</ol>
+
+<h3>How Matching Works</h3>
+<ul>
+  <li>Company names on both sides are normalized before they are compared, so differences in case,
+    punctuation and spacing do not prevent a match.</li>
+  <li>A company is mapped automatically only if exactly one unmapped Autotask PSA company matches
+    its normalized name. Ambiguous names are never mapped automatically.</li>
+  <li>If no exact match is found, up to five Autotask PSA candidates with a name similarity of
+    72&nbsp;% or higher are offered for review.</li>
+  <li>Companies that are already mapped are not processed, and an Autotask PSA company that is
+    already mapped is not offered as a candidate.</li>
+</ul>
+
+<h2 id="mapmanually">Mapping Companies Manually</h2>
+
+<p>Select this method if names of companies you manage in Veeam Service Provider Console and their
+names in Autotask PSA do not match.</p>
+
+<p>To map companies manually:</p>
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Click the <span class="ui">Autotask PSA</span> plugin tile.</li>
+  <li>In the menu on the left, click <span class="ui">Companies</span>.</li>
+  <li>From the list of companies, select an unmapped company.
+    <p class="substep">To narrow down the list of companies, use the
+      <span class="ui">Company Name</span> search or the <span class="ui">Status</span> filter.</p>
+  </li>
+  <li>At the top of the list, click <span class="ui">Map to</span>.</li>
+  <li>In the <span class="ui">Map Company</span> window, in the
+    <span class="ui">Autotask company</span> field, start typing the name of the Autotask PSA
+    company which you want to map, and select it from the list.
+    <p class="substep">The list is searchable and is filtered as you type.</p>
+  </li>
+  <li>Click <span class="ui">Map Company</span>.</li>
+  <li>Repeat steps 6&ndash;9 for all companies you want to map.</li>
+</ol>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>One Veeam Service Provider Console company can be mapped to one Autotask PSA company only.
+  Autotask PSA companies that are already mapped are not displayed in the list.</p>
+</div>
+
+<h2 id="unmap">Removing Mapping</h2>
+
+<p>If you want to stop sending data about services consumed by the company to Autotask PSA, you can
+remove mapping.</p>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>When you remove mapping for a company, consider that:</p>
+  <ul>
+    <li>Billing configuration of the company in the plugin, that is the selected contract and the
+      enabled services, will also be removed.</li>
+    <li>Contract services and quantities that have already been reported to Autotask PSA will not
+      be removed, and tickets that are open in Autotask PSA will not be closed. Update these records
+      in Autotask PSA manually if necessary.</li>
+  </ul>
+</div>
+
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Click the <span class="ui">Autotask PSA</span> plugin tile.</li>
+  <li>In the menu on the left, click <span class="ui">Companies</span>.</li>
+  <li>From the list of companies, select one or more mapped companies.</li>
+  <li>At the top of the list, click <span class="ui">Remove Mapping</span>.</li>
+  <li>In the <span class="ui">Remove Mapping</span> window, click <span class="ui">Yes</span>.</li>
+</ol>
+</div>
+
+<!-- ==================== BILLING ==================== -->
+<div class="topic">
+<h1 id="billing">Configuring Consolidated Billing</h1>
+
+<p class="intro">You can configure Veeam Service Provider Console to continuously send information
+to Autotask PSA about types and amount of services consumed by mapped companies. Autotask PSA will
+use this data to maintain quantities on recurring service contracts and generate consolidated
+invoices.</p>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>The amount of services is reported as the quantity of a contract service. The quantity depends
+  on the type of service:</p>
+  <ul>
+    <li>For services measured by actual numbers, the quantity is equal to the actual number of
+      managed objects or amount of consumed space as of the last day for which Veeam Service
+      Provider Console reported data.</li>
+    <li>For services measured for a billing period, the quantity is equal to the amount of resources
+      consumed for the billing period.</li>
+  </ul>
+  <p>Autotask PSA contracts will include the exact storage usage even if you have configured to
+  round up storage usage costs in the subscription plan. The amount of services provided free of
+  charge is defined by the selected subscription plan.</p>
+  <p>Make sure that the measurement unit of the selected Autotask PSA service is equal to the
+  measurement unit of the mapped Veeam Service Provider Console service. For details, see
+  <a href="#catalog">Billable Service Catalog</a>.</p>
+</div>
+
+<p>To configure billing consolidation, perform the following steps:</p>
+<ol class="steps">
+  <li><a href="#productmapping">Configure product mapping</a>.
+    <p class="substep">Map services from Veeam Service Provider Console to services in the Autotask
+      PSA service catalog.</p>
+  </li>
+  <li><a href="#selectcontract">Select a contract</a>.
+    <p class="substep">For every mapped company, select a contract which Autotask PSA will use to
+      bill measured consumption.</p>
+  </li>
+  <li><a href="#enableservices">Enable services for the contract</a>.
+    <p class="substep">Select the services that will be billed for the company.</p>
+  </li>
+</ol>
+
+<h2 id="billing-prereq">Prerequisites</h2>
+
+<p>Before configuring consolidated billing, check the following prerequisites:</p>
+<ul>
+  <li>Configure Autotask PSA plugin connection. For details, see
+    <a href="#connect">Step 2. Configure Plugin Connection</a>.</li>
+  <li>Enable the <span class="ui">Companies</span> and <span class="ui">Billing</span> integration
+    features. For details, see <a href="#enablefeatures">Step 3. Enable Integration
+    Features</a>.</li>
+  <li>Configure integration for the companies for which you want to consolidate billing data. For
+    details, see <a href="#companies">Configuring Companies Integration</a>.</li>
+  <li>The companies for which you want to consolidate billing data must have at least one recurring
+    service contract in Autotask PSA.</li>
+  <li>A subscription plan must be configured in Veeam Service Provider Console. The plugin uses it
+    as the price reference for services that it creates in Autotask PSA.</li>
+</ul>
+
+<h2 id="quantities">How Quantities Are Calculated</h2>
+
+<p>The plugin reads usage counters from Veeam Service Provider Console, converts them into billable
+units, and keeps the quantity of every Autotask PSA contract service aligned with the measured
+value. Quantities are maintained through contract service adjustments, which record the change in
+units rather than an absolute value.</p>
+
+<figure>
+<svg viewBox="0 0 720 168" xmlns="http://www.w3.org/2000/svg" font-family="Open Sans, Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="ar2" markerWidth="9" markerHeight="9" refX="8" refY="3.2" orient="auto">
+      <path d="M0,0 L8,3.2 L0,6.4 z" fill="#5a6169"/>
+    </marker>
+  </defs>
+  <rect x="4" y="34" width="132" height="78" rx="4" fill="#ffffff" stroke="#00b336" stroke-width="1.5"/>
+  <text x="70" y="60" font-size="11" font-weight="600" text-anchor="middle" fill="#232323">VSPC usage</text>
+  <text x="70" y="77" font-size="9.5" text-anchor="middle" fill="#5a6169">counters per company</text>
+  <text x="70" y="93" font-size="9.5" text-anchor="middle" fill="#5a6169">per day</text>
+
+  <rect x="168" y="34" width="132" height="78" rx="4" fill="#ffffff" stroke="#c8ced4" stroke-width="1.5"/>
+  <text x="234" y="56" font-size="11" font-weight="600" text-anchor="middle" fill="#232323">Aggregation</text>
+  <text x="234" y="73" font-size="9.5" text-anchor="middle" fill="#5a6169">last day, or sum</text>
+  <text x="234" y="88" font-size="9.5" text-anchor="middle" fill="#5a6169">over the period</text>
+  <text x="234" y="103" font-size="9.5" text-anchor="middle" fill="#8a9198">bytes to GB</text>
+
+  <rect x="332" y="34" width="132" height="78" rx="4" fill="#ffffff" stroke="#c8ced4" stroke-width="1.5"/>
+  <text x="398" y="56" font-size="11" font-weight="600" text-anchor="middle" fill="#232323">Difference</text>
+  <text x="398" y="73" font-size="9.5" text-anchor="middle" fill="#5a6169">measured units</text>
+  <text x="398" y="88" font-size="9.5" text-anchor="middle" fill="#5a6169">minus current units</text>
+  <text x="398" y="103" font-size="9.5" text-anchor="middle" fill="#8a9198">zero: nothing written</text>
+
+  <rect x="496" y="34" width="220" height="78" rx="4" fill="#fdf6f7" stroke="#c8102e" stroke-width="1.5"/>
+  <text x="606" y="56" font-size="11" font-weight="600" text-anchor="middle" fill="#c8102e">Autotask contract service</text>
+  <text x="606" y="75" font-size="9.5" text-anchor="middle" fill="#5a6169">contract service adjustment</text>
+  <text x="606" y="91" font-size="9.5" text-anchor="middle" fill="#5a6169">unit change = difference</text>
+  <text x="606" y="106" font-size="9.5" text-anchor="middle" fill="#8a9198">effective date: current day, UTC</text>
+
+  <line x1="136" y1="73" x2="164" y2="73" stroke="#5a6169" stroke-width="1.4" marker-end="url(#ar2)"/>
+  <line x1="300" y1="73" x2="328" y2="73" stroke="#5a6169" stroke-width="1.4" marker-end="url(#ar2)"/>
+  <line x1="464" y1="73" x2="492" y2="73" stroke="#5a6169" stroke-width="1.4" marker-end="url(#ar2)"/>
+</svg>
+<figcaption><b>Billing reconciliation.</b> The plugin compares the measured quantity with the
+quantity currently recorded on the contract service and reports only the difference, so that
+repeated runs on the same day do not increase the billed amount.</figcaption>
+</figure>
+
+<p>Two aggregation rules apply, depending on the service:</p>
+<ul>
+  <li><span class="ui">Services measured by actual numbers.</span> The quantity is the most recently
+    reported value: the actual number of managed objects, or the amount of consumed space, as of the
+    last day for which Veeam Service Provider Console reported data.</li>
+  <li><span class="ui">Services measured for a billing period.</span> The quantity is the total
+    amount consumed during the billing period. Data transfer out is measured this way.</li>
+</ul>
+
+<p>Storage counters are reported by Veeam Service Provider Console in bytes and are converted to
+gigabytes before they are sent to Autotask PSA.</p>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>Contracts have their own start and end dates in Autotask PSA. An adjustment whose effective
+  date is outside the contract period is rejected by Autotask PSA, and the corresponding line is
+  reported with the <span class="ui">error</span> status in the synchronization results.</p>
+</div>
+
+<h2 id="productmapping">Step 1. Configure Product Mapping</h2>
+
+<p>Enable Veeam Service Provider Console services that you want to bill in Autotask PSA:</p>
+
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Click the <span class="ui">Autotask PSA</span> plugin tile.</li>
+  <li>In the menu on the left, click <span class="ui">Billing</span>.</li>
+  <li>Navigate to the <span class="ui">Product Mapping</span> tab.</li>
+  <li>At the top of the page, from the <span class="ui">Use this subscription plan to define price
+    for the service</span> drop-down list, select a subscription plan from which you want to obtain
+    service prices.</li>
+  <li>Check the remaining billing settings and click <span class="ui">Apply</span>:
+    <ul>
+      <li><span class="ui">Use this unit of measure for all allocated storage</span> &mdash; fixed
+        to <span class="ui">TB</span> in this version.</li>
+      <li><span class="ui">Billing period start day</span> &mdash; day of month the billing period
+        starts, from 1 to 28. Default: 1.</li>
+      <li><span class="ui">Daily sync hour (UTC)</span> &mdash; hour at which automatic billing
+        synchronization runs. Default: 1.</li>
+      <li><span class="ui">Default billing code (for created services)</span> &mdash; Autotask PSA
+        allocation code assigned to services that the plugin creates.</li>
+    </ul>
+  </li>
+  <li>Under the name of a Veeam Service Provider Console service group, set a toggle to
+    <span class="ui">Enabled</span>.</li>
+  <li>For each service in the service group, select a necessary option from the
+    <span class="ui">Mode</span> drop-down list:
+    <ul>
+      <li><span class="ui">Existing Autotask service</span>
+        <p class="substep">In this case, Veeam Service Provider Console will map the service to the
+          selected active Autotask PSA service.</p>
+      </li>
+      <li><span class="ui">Create new service</span>
+        <p class="substep">In this case, Veeam Service Provider Console will create a new service in
+          the Autotask PSA service catalog and map it to the selected service. Specify the
+          <span class="ui">New service name</span> and <span class="ui">Unit price</span>. You can
+          change this price at any time in the Autotask PSA catalog.</p>
+      </li>
+      <li><span class="ui">Do not bill</span>
+        <p class="substep">In this case, Veeam Service Provider Console will skip the selected
+          service and will not map it to any service in Autotask PSA.</p>
+      </li>
+    </ul>
+  </li>
+  <li>Click <span class="ui">Save</span> in every service row that you have changed.</li>
+</ol>
+
+<h2 id="selectcontract">Step 2. Select a Contract</h2>
+
+<p>Select contracts which will be used to bill Veeam Service Provider Console services:</p>
+
+<ol class="steps">
+  <li>On the <span class="ui">Billing</span> page, navigate to the
+    <span class="ui">Contracts</span> tab.</li>
+  <li>From the list of mapped companies, select a company for which you want to configure billing,
+    and click <span class="ui">Configure</span> in its row.</li>
+  <li>In the <span class="ui">Contracts</span> window, from the
+    <span class="ui">Contract</span> drop-down list, select a necessary contract.
+    <p class="substep">If the company has no contracts in Autotask PSA, the window displays the
+      <span class="ui">No contracts found for this company in Autotask</span> message. Create a
+      recurring service contract in Autotask PSA, and then click
+      <span class="ui">Refresh Data</span> on the <span class="ui">Contracts</span> tab.</p>
+  </li>
+  <li>Proceed to <a href="#enableservices">Step 3. Enable Services for the Contract</a> without
+    closing the window.</li>
+</ol>
+
+<h2 id="enableservices">Step 3. Enable Services for the Contract</h2>
+
+<p>Select the services that will be billed on the selected contract:</p>
+
+<ol class="steps">
+  <li>In the <span class="ui">Contracts</span> window, under
+    <span class="ui">Enabled Services</span>, select the services that you want to bill for this
+    company.
+    <p class="substep">Only the services that you have mapped on the
+      <span class="ui">Product Mapping</span> tab are displayed. If the list is empty, return to the
+      <span class="ui">Product Mapping</span> tab and map at least one service.</p>
+  </li>
+  <li>Click <span class="ui">Save</span>.</li>
+  <li>Repeat the procedure for all companies for which you want to consolidate billing data.</li>
+</ol>
+
+<p>Veeam Service Provider Console will attach the mapped services to the selected contract and start
+sending information about the quantity of consumed services to Autotask PSA.</p>
+
+<p>To stop billing a company without removing its company mapping, click
+<span class="ui">Disable Billing</span> in the company row, and then click
+<span class="ui">Yes</span>.</p>
+
+<h2 id="syncbilling">Previewing and Running Synchronization</h2>
+
+<p>Billing synchronization runs automatically once a day at the configured hour. You can also run it
+manually, and you can check what a run will do before any data is sent to Autotask PSA.</p>
+
+<table>
+  <thead><tr><th style="width:52mm">Command</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><span class="ui">Preview (Dry Run)</span></td><td>Calculates the measured units, the
+      current units and the resulting difference for every configured company and service, and
+      records the outcome in the billing history without sending any data to Autotask PSA. Use this
+      command to validate a new configuration.</td></tr>
+    <tr><td><span class="ui">Sync Now</span></td><td>Performs the same calculation and reports the
+      resulting contract service adjustments to Autotask PSA. Veeam Service Provider Console will
+      ask you to confirm the operation.</td></tr>
+    <tr><td><span class="ui">Refresh Data</span></td><td>Retrieves mapped companies and their
+      Autotask PSA contracts. The command displays the time of the last synchronization.</td></tr>
+  </tbody>
+</table>
+
+<p>Both commands display the <span class="ui">Synchronization</span> results list.</p>
+
+<table class="tight">
+  <thead><tr><th style="width:36mm">Column</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><span class="ui">Company</span></td><td>Veeam Service Provider Console company.</td></tr>
+    <tr><td><span class="ui">Service</span></td><td>Veeam Service Provider Console service.</td></tr>
+    <tr><td><span class="ui">Current</span></td><td>Units currently recorded on the Autotask PSA
+      contract service.</td></tr>
+    <tr><td><span class="ui">Measured</span></td><td>Units calculated from Veeam Service Provider
+      Console usage data.</td></tr>
+    <tr><td><span class="ui">Delta</span></td><td>Difference that will be, or that was, reported to
+      Autotask PSA.</td></tr>
+    <tr><td><span class="ui">Status</span></td><td>Result of the operation:
+      <span class="ui">adjusted</span> &mdash; reported to Autotask PSA;
+      <span class="ui">planned</span> &mdash; result of a dry run;
+      <span class="ui">no-change</span> &mdash; the difference was zero and nothing was reported;
+      <span class="ui">skipped</span> &mdash; the line was not eligible for reporting;
+      <span class="ui">error</span> &mdash; Autotask PSA rejected the operation.</td></tr>
+    <tr><td><span class="ui">Message</span></td><td>Details for the line, including the Autotask PSA
+      error message where applicable.</td></tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>Adjustments are reported with the effective date set to the current day in UTC. Running
+  synchronization twice on the same day is safe: the second run calculates a difference of zero for
+  the lines that have not changed and reports nothing.</p>
+</div>
+
+<h2 id="catalog">Billable Service Catalog</h2>
+
+<p>The following Veeam Service Provider Console services can be mapped to Autotask PSA services. The
+<span class="ui">Measurement</span> column indicates which aggregation rule applies. For details,
+see <a href="#quantities">How Quantities Are Calculated</a>.</p>
+
+<table class="tight">
+  <thead>
+    <tr><th style="width:42mm">Service group</th><th style="width:56mm">Service</th>
+      <th style="width:18mm">Unit</th><th>Measurement</th></tr>
+  </thead>
+  <tbody>
+    <tr><td rowspan="6">Managed Backup</td><td>Managed VMs</td><td>VMs</td><td>Actual number</td></tr>
+    <tr><td>Backed-up VMs</td><td>VMs</td><td>Actual number</td></tr>
+    <tr><td>CDP-protected VMs</td><td>VMs</td><td>Actual number</td></tr>
+    <tr><td>Managed server agents</td><td>agents</td><td>Actual number</td></tr>
+    <tr><td>Managed workstation agents</td><td>agents</td><td>Actual number</td></tr>
+    <tr><td>Managed users</td><td>users</td><td>Actual number</td></tr>
+
+    <tr><td rowspan="5">Cloud Connect Backup</td><td>VM cloud backups</td><td>VMs</td><td>Actual number</td></tr>
+    <tr><td>Server agent cloud backups</td><td>agents</td><td>Actual number</td></tr>
+    <tr><td>Workstation agent cloud backups</td><td>agents</td><td>Actual number</td></tr>
+    <tr><td>Cloud repository consumption</td><td>GB</td><td>Actual number, bytes converted to GB</td></tr>
+    <tr><td>Data transfer out</td><td>GB</td><td>Billing period, bytes converted to GB</td></tr>
+
+    <tr><td rowspan="2">Cloud Connect Replication</td><td>VM cloud replicas</td><td>VMs</td><td>Actual number</td></tr>
+    <tr><td>Replica storage consumption</td><td>GB</td><td>Actual number, bytes converted to GB</td></tr>
+
+    <tr><td rowspan="2">Microsoft 365 Backup</td><td>Protected Microsoft 365 users</td><td>users</td><td>Actual number</td></tr>
+    <tr><td>Microsoft 365 backup size</td><td>GB</td><td>Actual number, bytes converted to GB</td></tr>
+
+    <tr><td rowspan="2">File Share Backup</td><td>Protected file shares</td><td>shares</td><td>Actual number</td></tr>
+    <tr><td>File share backup size</td><td>GB</td><td>Actual number, bytes converted to GB</td></tr>
+
+    <tr><td>Public Cloud Backup</td><td>Public cloud backup size</td><td>GB</td><td>Actual number, bytes converted to GB</td></tr>
+  </tbody>
+</table>
+</div>

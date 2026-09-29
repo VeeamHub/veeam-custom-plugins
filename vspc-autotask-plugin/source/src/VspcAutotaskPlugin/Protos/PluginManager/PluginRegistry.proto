@@ -1,0 +1,83 @@
+﻿syntax = "proto3";
+
+import 'PluginManifest.proto';
+
+option csharp_namespace = "Veeam.AC.Service.PluginManager";
+
+/**
+ * Service for plugins used to signal start/stop of plugin or requesting VSPC resources by plugin.
+ */
+service PluginRegistry {
+	// signal that plugin is started.
+	rpc register (PluginRegisterRequest) returns (PluginRegisterReply);
+	// signal that plugin is stopped.
+	rpc unregister (PluginUnregisterRequest) returns (PluginUnregisterReply);
+	// find endpoint for specified VSPC service.
+	rpc discoverService (PluginDiscoverServiceRequest) returns (PluginDiscoverServiceReply);
+	// get VSPC REST API key given to plugin.
+	rpc getApiKey (PluginGetApiKeyRequest) returns (PluginGetApiKeyReply);
+	// get DB connection string given to plugin.
+	rpc requestDbConnection (PluginRequestDbConnectionRequest) returns (PluginRequestDbConnectionReply);
+}
+
+message PluginRegisterRequest {
+	string pluginId = 1; // UUID of plugin.
+	PluginManifest manifest = 2;
+}
+
+message PluginRegisterReply {
+
+}
+
+message PluginUnregisterRequest {
+	string pluginId = 1; // UUID of plugin.
+}
+
+message PluginUnregisterReply {
+
+}
+
+message PluginDiscoverServiceRequest {
+	string pluginId = 1; // UUID of plugin.
+	VspcServiceName service = 2; // VSPC service type to discover.
+}
+
+enum VspcServiceName {
+	Rest = 0;
+	AgentConnectionBroker = 1;
+	Users = 2;
+	Billing = 3;
+	OrganizationalStructure = 4;
+	Licensing = 5;
+	Pulse = 6;
+	PermanentNotifications = 7;
+	Alarms = 8;
+	ProductInformation = 9;
+}
+
+message PluginDiscoverServiceReply {
+	string serviceEndpoint = 1; // URI endpoint with protocol/host/port for found plugin.
+	string trustedTlsCertificateHash = 2; // SHA-1 hash of X509 certificate which is considered trusted for TLS connection to this endpoint.
+}
+
+message PluginGetApiKeyRequest {
+	string pluginId = 1; // UUID of plugin.
+}
+
+message PluginGetApiKeyReply {
+	string apiKey = 1; // VSPC REST API key
+}
+
+message PluginRequestDbConnectionRequest {
+	string pluginId = 1; // UUID of plugin.
+}
+
+message PluginRequestDbConnectionReply {
+	string dbConnectionString = 1; // Database connection string 
+	DbProviderName dbProvider = 2; // Type of database
+}
+
+enum DbProviderName {
+	MsSql = 0; // MS SQL Server, version and edition is VSPC compatible
+	PostgreSql = 1; // PogstgreSQL, version and edition is VSPC compatible
+}

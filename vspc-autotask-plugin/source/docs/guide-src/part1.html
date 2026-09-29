@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Autotask PSA Integration for Veeam Service Provider Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+<style>
+@page { size: Letter; margin: 18mm 20mm 16mm 20mm; }
+/* The cover banner bleeds to the page edges, so the first page carries no margins
+   and the cover supplies its own padding. */
+@page :first { margin: 0; }
+
+:root{
+  /* Colours sampled from the Veeam Service Provider Console Guide for Service Providers */
+  --ink:#232323;          /* body text */
+  --ink-head:#414141;     /* headings, cover subtitle */
+  --green:#00d15f;        /* Veeam green: cover banner, cover type */
+  --link:#00a7e2;         /* cross-references, as in the official PDF */
+  --note-bg:#e3eefe;      /* note background */
+  --note-label:#283e8e;   /* NOTE: label */
+  --toc-l2:#b57846;       /* second-level contents entries */
+  --rule:#c8ced4;
+  --rule-soft:#e2e6ea;
+  --th-bg:#f0f2f4;
+  --code-bg:#f4f6f8;
+  --at:#c8102e;
+}
+
+*{ box-sizing:border-box; }
+html{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+
+body{
+  margin:0;
+  font-family:"Guardian Sans LC","Open Sans","Segoe UI",Helvetica,Arial,sans-serif;
+  font-size:10pt;
+  line-height:1.7;
+  color:var(--ink);
+  orphans:3;
+  widows:3;
+}
+
+/* ---------------- cover ---------------- */
+.cover{ page-break-after:always; position:relative; }
+/* The banner bleeds to the page edges, so it is pulled out of the text margins. */
+.cover-banner{
+  background:var(--green);
+  height:34mm;
+}
+.cover-body{ padding:52mm 20mm 0 20mm; }
+.cover-title{
+  font-size:26pt;
+  font-weight:300;
+  line-height:1.14;
+  color:var(--green);
+  letter-spacing:-.005em;
+  margin:0;
+}
+.cover-rule{ border-top:1px solid var(--rule); margin:14mm 0 10mm 0; }
+.cover-version{ font-size:19pt; font-weight:400; color:var(--green); margin:0 0 4mm 0; }
+.cover-subtitle{ font-size:17pt; font-weight:400; color:var(--ink-head); margin:0 0 3mm 0; }
+.cover-date{ font-size:13pt; font-weight:400; color:var(--ink-head); margin:0; }
+.cover-note{
+  margin-top:26mm; font-size:9pt; color:#6b7176; line-height:1.6;
+  border-top:1px solid var(--rule-soft); padding-top:5mm; max-width:150mm;
+}
+
+/* ---------------- headings ---------------- */
+/* Topic titles: 28/14 of body at weight 400, as on the Help Center. */
+h1{
+  font-size:20pt; font-weight:400; line-height:1.25; color:var(--ink-head);
+  margin:0 0 8mm 0; page-break-after:avoid;
+}
+/* Subheadings: 21/14 of body at weight 600. */
+h2{
+  font-size:15pt; font-weight:600; line-height:1.3; color:var(--ink-head);
+  margin:8mm 0 4mm 0; page-break-after:avoid;
+}
+h3{
+  font-size:11.5pt; font-weight:600; line-height:1.35; color:var(--ink-head);
+  margin:6mm 0 2.5mm 0; page-break-after:avoid;
+}
+.topic{ page-break-before:always; }
+/* Short blocks that must not be split, e.g. an "In This Section" list whose last
+   bullet would otherwise be stranded on a page of its own. */
+.keep{ page-break-inside:avoid; }
+
+p{ margin:0 0 4mm 0; }
+/* Intro paragraphs are set in the heading grey, as in the official guide. */
+p.intro{ color:var(--ink-head); }
+
+ul,ol{ margin:0 0 4mm 0; padding-left:7mm; }
+li{ margin-bottom:2mm; }
+li > ul, li > ol{ margin-top:2mm; }
+ol.steps > li{ margin-bottom:3mm; }
+/* Explanatory text under a step, matching the guide's indented sub-paragraph. */
+.substep{ margin:1.5mm 0 0 0; }
+
+a{ color:var(--link); text-decoration:none; }
+
+/* ---------------- inline ---------------- */
+.ui{ font-weight:700; color:#111; }
+em{ font-style:italic; }
+code{
+  font-family:Consolas,"Courier New",monospace; font-size:9pt;
+  background:var(--code-bg); padding:.3mm 1.2mm; border-radius:2px; color:#1a2b3c;
+  word-break:break-word;
+}
+
+/* ---------------- notes ---------------- */
+.note{
+  background:var(--note-bg); border-radius:6px; padding:4mm 5mm; margin:4mm 0;
+  page-break-inside:avoid; line-height:1.6;
+}
+.note .label{
+  display:block; font-size:10.5pt; font-weight:600; color:var(--note-label);
+  text-transform:uppercase; margin-bottom:2mm;
+}
+.note p:last-child, .note ul:last-child, .note ol:last-child{ margin-bottom:0; }
+.note ul{ margin-bottom:3mm; }
+
+/* ---------------- tables ---------------- */
+table{
+  width:100%; border-collapse:collapse; margin:4mm 0; font-size:9pt;
+  line-height:1.5; page-break-inside:auto;
+}
+thead{ display:table-header-group; }
+tr{ page-break-inside:avoid; }
+th{
+  text-align:left; background:var(--th-bg); border:1px solid var(--rule);
+  padding:2.2mm 2.8mm; font-weight:600; color:var(--ink-head);
+}
+td{ border:1px solid var(--rule); padding:2.2mm 2.8mm; vertical-align:top; }
+table.tight{ font-size:8.6pt; }
+table.tight td, table.tight th{ padding:1.6mm 2.4mm; }
+.kv td:first-child{ width:48mm; font-weight:600; }
+
+/* ---------------- contents ---------------- */
+.contents{ page-break-after:always; }
+.contents h1{
+  font-size:30pt; font-weight:300; color:var(--ink-head); margin-bottom:9mm;
+}
+.contents .rows{ font-size:9.5pt; line-height:1.4; }
+.toc-l1, .toc-l2{ display:flex; align-items:baseline; gap:2mm; }
+.toc-l1{ font-weight:700; text-transform:uppercase; color:var(--ink-head); margin-top:1.6mm; letter-spacing:.005em; }
+.toc-l2{ color:var(--toc-l2); padding-left:8mm; }
+/* The title keeps its natural width; only the leader gives way. */
+.toc-l1 .t, .toc-l2 .t{ flex:0 0 auto; white-space:nowrap; }
+/* Leaders are a clipped run of periods rather than a repeating background: a background
+   gradient is rasterised into one image per row, which added ~4.8 MB to the PDF.
+   flex-basis 0 stops the dot run from claiming intrinsic width and wrapping the title. */
+.dots{
+  flex:1 1 0; min-width:6mm; overflow:hidden; white-space:nowrap;
+  color:#7a8288; letter-spacing:.55mm;
+}
+.dots::before{ content:"............................................................................................"; }
+.pg{ flex:0 0 auto; font-variant-numeric:tabular-nums; }
+/* Hidden until the page numbers are resolved from the rendered PDF. */
+.contents.no-pages .dots, .contents.no-pages .pg{ display:none; }
+
+/* ---------------- figures ---------------- */
+figure{ margin:5mm 0; page-break-inside:avoid; text-align:center; }
+figure svg{ max-width:100%; height:auto; }
+figcaption{
+  font-size:8.6pt; color:var(--ink-head); margin-top:3mm; text-align:left;
+  line-height:1.5;
+}
+figcaption b{ color:var(--ink); }
+
+/* ---------------- misc ---------------- */
+.pathbox{
+  background:var(--code-bg); border:1px solid var(--rule); padding:3mm 3.5mm;
+  font-family:Consolas,"Courier New",monospace; font-size:9pt; margin:4mm 0;
+  page-break-inside:avoid; word-break:break-all;
+}
+</style>
+</head>
+<body>
+
+<!-- ============================== COVER ============================== -->
+<div class="cover">
+  <div class="cover-banner"></div>
+  <div class="cover-body">
+    <div class="cover-title">Autotask PSA Integration<br>for Veeam Service Provider Console</div>
+    <div class="cover-rule"></div>
+    <div class="cover-version">Plugin Version 1.5.6</div>
+    <div class="cover-subtitle">Guide for Service Providers</div>
+    <div class="cover-date">August, 2026</div>
+    <div class="cover-note">
+      Applies to Veeam Service Provider Console 9.2 and 9.3. The integration uses the Datto Autotask PSA
+      REST API v1.0. This document describes the Autotask PSA application plugin and is not part of
+      the Veeam Service Provider Console product documentation set.
+    </div>
+  </div>
+</div>
+
+<!-- ============================= CONTENTS ============================= -->
+<div class="contents">
+<h1>Contents</h1>
+<div class="rows">
+
+  <div class="toc-l1"><span class="t">Integration with Autotask PSA</span><span class="dots"></span><span class="pg" data-t="Integration with Autotask PSA"></span></div>
+  <div class="toc-l2"><span class="t">Integration Features</span><span class="dots"></span><span class="pg" data-t="Integration Features"></span></div>
+  <div class="toc-l2"><span class="t">How the Integration Works</span><span class="dots"></span><span class="pg" data-t="How the Integration Works"></span></div>
+
+  <div class="toc-l1"><span class="t">Requirements and Considerations</span><span class="dots"></span><span class="pg" data-t="Requirements and Considerations"></span></div>
+  <div class="toc-l2"><span class="t">System Requirements</span><span class="dots"></span><span class="pg" data-t="System Requirements"></span></div>
+  <div class="toc-l2"><span class="t">Required Privileges</span><span class="dots"></span><span class="pg" data-t="Required Privileges"></span></div>
+  <div class="toc-l2"><span class="t">Ports, Files and Stored Data</span><span class="dots"></span><span class="pg" data-t="Ports, Files and Stored Data"></span></div>
+  <div class="toc-l2"><span class="t">Considerations and Limitations</span><span class="dots"></span><span class="pg" data-t="Considerations and Limitations"></span></div>
+
+  <div class="toc-l1"><span class="t">Installing the Autotask PSA Plugin</span><span class="dots"></span><span class="pg" data-t="Installing the Autotask PSA Plugin"></span></div>
+  <div class="toc-l2"><span class="t">Installing the Plugin</span><span class="dots"></span><span class="pg" data-t="Installing the Plugin"></span></div>
+  <div class="toc-l2"><span class="t">Upgrading the Plugin</span><span class="dots"></span><span class="pg" data-t="Upgrading the Plugin"></span></div>
+  <div class="toc-l2"><span class="t">Removing the Plugin</span><span class="dots"></span><span class="pg" data-t="Removing the Plugin"></span></div>
+
+  <div class="toc-l1"><span class="t">Enabling Autotask PSA Integration</span><span class="dots"></span><span class="pg" data-t="Enabling Autotask PSA Integration"></span></div>
+  <div class="toc-l2"><span class="t">Step 1. Obtain Autotask API Credentials</span><span class="dots"></span><span class="pg" data-t="Step 1. Obtain Autotask API Credentials"></span></div>
+  <div class="toc-l2"><span class="t">Step 2. Configure Plugin Connection</span><span class="dots"></span><span class="pg" data-t="Step 2. Configure Plugin Connection"></span></div>
+  <div class="toc-l2"><span class="t">Step 3. Enable Integration Features</span><span class="dots"></span><span class="pg" data-t="Step 3. Enable Integration Features"></span></div>
+
+  <div class="toc-l1"><span class="t">Configuring Companies Integration</span><span class="dots"></span><span class="pg" data-t="Configuring Companies Integration"></span></div>
+  <div class="toc-l2"><span class="t">Prerequisites</span><span class="dots"></span><span class="pg" data-t="Prerequisites"></span></div>
+  <div class="toc-l2"><span class="t">Companies Page</span><span class="dots"></span><span class="pg" data-t="Companies Page"></span></div>
+  <div class="toc-l2"><span class="t">Mapping Companies Automatically</span><span class="dots"></span><span class="pg" data-t="Mapping Companies Automatically"></span></div>
+  <div class="toc-l2"><span class="t">Mapping Companies Manually</span><span class="dots"></span><span class="pg" data-t="Mapping Companies Manually"></span></div>
+  <div class="toc-l2"><span class="t">Removing Mapping</span><span class="dots"></span><span class="pg" data-t="Removing Mapping"></span></div>
+
+  <div class="toc-l1"><span class="t">Configuring Consolidated Billing</span><span class="dots"></span><span class="pg" data-t="Configuring Consolidated Billing"></span></div>
+  <div class="toc-l2"><span class="t">Prerequisites</span><span class="dots"></span><span class="pg" data-t="Prerequisites"></span></div>
+  <div class="toc-l2"><span class="t">How Quantities Are Calculated</span><span class="dots"></span><span class="pg" data-t="How Quantities Are Calculated"></span></div>
+  <div class="toc-l2"><span class="t">Step 1. Configure Product Mapping</span><span class="dots"></span><span class="pg" data-t="Step 1. Configure Product Mapping"></span></div>
+  <div class="toc-l2"><span class="t">Step 2. Select a Contract</span><span class="dots"></span><span class="pg" data-t="Step 2. Select a Contract"></span></div>
+  <div class="toc-l2"><span class="t">Step 3. Enable Services for the Contract</span><span class="dots"></span><span class="pg" data-t="Step 3. Enable Services for the Contract"></span></div>
+  <div class="toc-l2"><span class="t">Previewing and Running Synchronization</span><span class="dots"></span><span class="pg" data-t="Previewing and Running Synchronization"></span></div>
+  <div class="toc-l2"><span class="t">Billable Service Catalog</span><span class="dots"></span><span class="pg" data-t="Billable Service Catalog"></span></div>
+
+  <div class="toc-l1"><span class="t">Configuring Automated Ticketing</span><span class="dots"></span><span class="pg" data-t="Configuring Automated Ticketing"></span></div>
+  <div class="toc-l2"><span class="t">Prerequisites</span><span class="dots"></span><span class="pg" data-t="Prerequisites"></span></div>
+  <div class="toc-l2"><span class="t">Configuring Ticket Settings</span><span class="dots"></span><span class="pg" data-t="Configuring Ticket Settings"></span></div>
+  <div class="toc-l2"><span class="t">Enabling Alarms</span><span class="dots"></span><span class="pg" data-t="Enabling Alarms"></span></div>
+  <div class="toc-l2"><span class="t">Ticket and Alarm Lifecycle</span><span class="dots"></span><span class="pg" data-t="Ticket and Alarm Lifecycle"></span></div>
+  <div class="toc-l2"><span class="t">Recent Ticket Activity</span><span class="dots"></span><span class="pg" data-t="Recent Ticket Activity"></span></div>
+
+  <div class="toc-l1"><span class="t">Refreshing Data</span><span class="dots"></span><span class="pg" data-t="Refreshing Data"></span></div>
+
+  <div class="toc-l1"><span class="t">Monitoring the Integration</span><span class="dots"></span><span class="pg" data-t="Monitoring the Integration"></span></div>
+  <div class="toc-l2"><span class="t">Plugin Status Page</span><span class="dots"></span><span class="pg" data-t="Plugin Status Page"></span></div>
+  <div class="toc-l2"><span class="t">Activity Page</span><span class="dots"></span><span class="pg" data-t="Activity Page"></span></div>
+  <div class="toc-l2"><span class="t">Obtaining Plugin Logs</span><span class="dots"></span><span class="pg" data-t="Obtaining Plugin Logs"></span></div>
+  <div class="toc-l2"><span class="t">Troubleshooting</span><span class="dots"></span><span class="pg" data-t="Troubleshooting"></span></div>
+
+  <div class="toc-l1"><span class="t">Terminology</span><span class="dots"></span><span class="pg" data-t="Terminology"></span></div>
+
+  <div class="toc-l1"><span class="t">Plugin REST Endpoints</span><span class="dots"></span><span class="pg" data-t="Plugin REST Endpoints"></span></div>
+
+</div>
+</div>

@@ -1,0 +1,19 @@
+{
+    "extends": "@veeam-vspc/configs/tsconfig.json",
+    "compilerOptions": {
+        "baseUrl": "./src",
+        "skipLibCheck": true,
+        "strict": false
+    },
+    "include": [
+        "src/**/*.*",
+        "node_modules/@veeam-vspc/shared/vspc/**/*.ts",
+        "node_modules/@veeam-vspc/shared/icons/**/*.*",
+        "node_modules/@veeam-vspc/shared/styles/**/*.*",
+        "node_modules/@veeam-vspc/shared/global.d.ts"
+    ],
+    "exclude": [
+        "node_modules/@veeam-vspc/**/*.test.ts",
+        "node_modules/@veeam-vspc/shared/**/*(^.d).ts"
+    ]
+}

@@ -1,0 +1,27 @@
+bin/
+obj/
+data/
+build/
+packaging/plugin/staging/
+packaging/plugin/sign.p12
+packaging/sdk-drop/*.zip
+*.db
+*.db-shm
+*.db-wal
+*.user
+.vs/
+TestResults/
+
+# Added 2026-09-29 for the VeeamHub repository
+node_modules/
+Logs/
+src/UI/build/
+# Veeam VSPC plugin SDK artifacts (KB4311) are not redistributed
+src/UI/vendor/*.tgz
+packaging/sdk-drop/*
+!packaging/sdk-drop/README.md
+# Integration Guide build intermediates
+docs/guide-src/guide.html
+docs/guide-src/guide-verify.html
+docs/guide-src/pass1.pdf
+docs/guide-src/Autotask-PSA-Integration-Guide.pdf

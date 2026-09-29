@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Autotask PSA Integration — Veeam Service Provider Console</title>
+  <link rel="stylesheet" href="app.css">
+  <link rel="icon" href="favicon.png">
+</head>
+<body>
+  <div id="auth-overlay" class="auth-overlay hidden">
+    <div class="auth-card">
+      <div class="brand">
+        <span class="brand-mark">V⇄A</span>
+        <div>
+          <h1>Autotask PSA Integration</h1>
+          <p>for Veeam Service Provider Console</p>
+        </div>
+      </div>
+      <p id="auth-hint" style="margin-top:18px">
+        Access denied: your Veeam Service Provider Console account does not have access to this
+        plugin. A Portal Administrator or Portal Operator role is required.
+      </p>
+    </div>
+  </div>
+
+  <div id="shell" class="shell hidden">
+    <nav class="sidebar">
+      <div class="brand small">
+        <span class="brand-mark">V⇄A</span>
+        <div><strong>Autotask PSA</strong><br><span class="muted">VSPC plugin</span></div>
+      </div>
+      <button class="nav-btn active" data-view="dashboard">Dashboard</button>
+      <button class="nav-btn" data-view="companies">Companies</button>
+      <button class="nav-btn" data-view="billing">Billing</button>
+      <button class="nav-btn" data-view="ticketing">Ticketing</button>
+      <button class="nav-btn" data-view="settings">Settings</button>
+      <button class="nav-btn" data-view="activity">Activity</button>
+    </nav>
+    <main id="view" class="view"></main>
+  </div>
+
+  <div id="toasts" class="toasts"></div>
+  <script src="app.js"></script>
+</body>
+</html>
