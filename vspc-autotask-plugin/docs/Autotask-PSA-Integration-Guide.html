@@ -1,0 +1,1844 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Autotask PSA Integration for Veeam Service Provider Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap" rel="stylesheet">
+<style>
+@page { size: Letter; margin: 18mm 20mm 16mm 20mm; }
+/* The cover banner bleeds to the page edges, so the first page carries no margins
+   and the cover supplies its own padding. */
+@page :first { margin: 0; }
+
+:root{
+  /* Colours sampled from the Veeam Service Provider Console Guide for Service Providers */
+  --ink:#232323;          /* body text */
+  --ink-head:#414141;     /* headings, cover subtitle */
+  --green:#00d15f;        /* Veeam green: cover banner, cover type */
+  --link:#00a7e2;         /* cross-references, as in the official PDF */
+  --note-bg:#e3eefe;      /* note background */
+  --note-label:#283e8e;   /* NOTE: label */
+  --toc-l2:#b57846;       /* second-level contents entries */
+  --rule:#c8ced4;
+  --rule-soft:#e2e6ea;
+  --th-bg:#f0f2f4;
+  --code-bg:#f4f6f8;
+  --at:#c8102e;
+}
+
+*{ box-sizing:border-box; }
+html{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+
+body{
+  margin:0;
+  font-family:"Guardian Sans LC","Open Sans","Segoe UI",Helvetica,Arial,sans-serif;
+  font-size:10pt;
+  line-height:1.7;
+  color:var(--ink);
+  orphans:3;
+  widows:3;
+}
+
+/* ---------------- cover ---------------- */
+.cover{ page-break-after:always; position:relative; }
+/* The banner bleeds to the page edges, so it is pulled out of the text margins. */
+.cover-banner{
+  background:var(--green);
+  height:34mm;
+}
+.cover-body{ padding:52mm 20mm 0 20mm; }
+.cover-title{
+  font-size:26pt;
+  font-weight:300;
+  line-height:1.14;
+  color:var(--green);
+  letter-spacing:-.005em;
+  margin:0;
+}
+.cover-rule{ border-top:1px solid var(--rule); margin:14mm 0 10mm 0; }
+.cover-version{ font-size:19pt; font-weight:400; color:var(--green); margin:0 0 4mm 0; }
+.cover-subtitle{ font-size:17pt; font-weight:400; color:var(--ink-head); margin:0 0 3mm 0; }
+.cover-date{ font-size:13pt; font-weight:400; color:var(--ink-head); margin:0; }
+.cover-note{
+  margin-top:26mm; font-size:9pt; color:#6b7176; line-height:1.6;
+  border-top:1px solid var(--rule-soft); padding-top:5mm; max-width:150mm;
+}
+
+/* ---------------- headings ---------------- */
+/* Topic titles: 28/14 of body at weight 400, as on the Help Center. */
+h1{
+  font-size:20pt; font-weight:400; line-height:1.25; color:var(--ink-head);
+  margin:0 0 8mm 0; page-break-after:avoid;
+}
+/* Subheadings: 21/14 of body at weight 600. */
+h2{
+  font-size:15pt; font-weight:600; line-height:1.3; color:var(--ink-head);
+  margin:8mm 0 4mm 0; page-break-after:avoid;
+}
+h3{
+  font-size:11.5pt; font-weight:600; line-height:1.35; color:var(--ink-head);
+  margin:6mm 0 2.5mm 0; page-break-after:avoid;
+}
+.topic{ page-break-before:always; }
+/* Short blocks that must not be split, e.g. an "In This Section" list whose last
+   bullet would otherwise be stranded on a page of its own. */
+.keep{ page-break-inside:avoid; }
+
+p{ margin:0 0 4mm 0; }
+/* Intro paragraphs are set in the heading grey, as in the official guide. */
+p.intro{ color:var(--ink-head); }
+
+ul,ol{ margin:0 0 4mm 0; padding-left:7mm; }
+li{ margin-bottom:2mm; }
+li > ul, li > ol{ margin-top:2mm; }
+ol.steps > li{ margin-bottom:3mm; }
+/* Explanatory text under a step, matching the guide's indented sub-paragraph. */
+.substep{ margin:1.5mm 0 0 0; }
+
+a{ color:var(--link); text-decoration:none; }
+
+/* ---------------- inline ---------------- */
+.ui{ font-weight:700; color:#111; }
+em{ font-style:italic; }
+code{
+  font-family:Consolas,"Courier New",monospace; font-size:9pt;
+  background:var(--code-bg); padding:.3mm 1.2mm; border-radius:2px; color:#1a2b3c;
+  word-break:break-word;
+}
+
+/* ---------------- notes ---------------- */
+.note{
+  background:var(--note-bg); border-radius:6px; padding:4mm 5mm; margin:4mm 0;
+  page-break-inside:avoid; line-height:1.6;
+}
+.note .label{
+  display:block; font-size:10.5pt; font-weight:600; color:var(--note-label);
+  text-transform:uppercase; margin-bottom:2mm;
+}
+.note p:last-child, .note ul:last-child, .note ol:last-child{ margin-bottom:0; }
+.note ul{ margin-bottom:3mm; }
+
+/* ---------------- tables ---------------- */
+table{
+  width:100%; border-collapse:collapse; margin:4mm 0; font-size:9pt;
+  line-height:1.5; page-break-inside:auto;
+}
+thead{ display:table-header-group; }
+tr{ page-break-inside:avoid; }
+th{
+  text-align:left; background:var(--th-bg); border:1px solid var(--rule);
+  padding:2.2mm 2.8mm; font-weight:600; color:var(--ink-head);
+}
+td{ border:1px solid var(--rule); padding:2.2mm 2.8mm; vertical-align:top; }
+table.tight{ font-size:8.6pt; }
+table.tight td, table.tight th{ padding:1.6mm 2.4mm; }
+.kv td:first-child{ width:48mm; font-weight:600; }
+
+/* ---------------- contents ---------------- */
+.contents{ page-break-after:always; }
+.contents h1{
+  font-size:30pt; font-weight:300; color:var(--ink-head); margin-bottom:9mm;
+}
+.contents .rows{ font-size:9.5pt; line-height:1.4; }
+.toc-l1, .toc-l2{ display:flex; align-items:baseline; gap:2mm; }
+.toc-l1{ font-weight:700; text-transform:uppercase; color:var(--ink-head); margin-top:1.6mm; letter-spacing:.005em; }
+.toc-l2{ color:var(--toc-l2); padding-left:8mm; }
+/* The title keeps its natural width; only the leader gives way. */
+.toc-l1 .t, .toc-l2 .t{ flex:0 0 auto; white-space:nowrap; }
+/* Leaders are a clipped run of periods rather than a repeating background: a background
+   gradient is rasterised into one image per row, which added ~4.8 MB to the PDF.
+   flex-basis 0 stops the dot run from claiming intrinsic width and wrapping the title. */
+.dots{
+  flex:1 1 0; min-width:6mm; overflow:hidden; white-space:nowrap;
+  color:#7a8288; letter-spacing:.55mm;
+}
+.dots::before{ content:"............................................................................................"; }
+.pg{ flex:0 0 auto; font-variant-numeric:tabular-nums; }
+/* Hidden until the page numbers are resolved from the rendered PDF. */
+.contents.no-pages .dots, .contents.no-pages .pg{ display:none; }
+
+/* ---------------- figures ---------------- */
+figure{ margin:5mm 0; page-break-inside:avoid; text-align:center; }
+figure svg{ max-width:100%; height:auto; }
+figcaption{
+  font-size:8.6pt; color:var(--ink-head); margin-top:3mm; text-align:left;
+  line-height:1.5;
+}
+figcaption b{ color:var(--ink); }
+
+/* ---------------- misc ---------------- */
+.pathbox{
+  background:var(--code-bg); border:1px solid var(--rule); padding:3mm 3.5mm;
+  font-family:Consolas,"Courier New",monospace; font-size:9pt; margin:4mm 0;
+  page-break-inside:avoid; word-break:break-all;
+}
+</style>
+</head>
+<body>
+
+<!-- ============================== COVER ============================== -->
+<div class="cover">
+  <div class="cover-banner"></div>
+  <div class="cover-body">
+    <div class="cover-title">Autotask PSA Integration<br>for Veeam Service Provider Console</div>
+    <div class="cover-rule"></div>
+    <div class="cover-version">Plugin Version 1.5.6</div>
+    <div class="cover-subtitle">Guide for Service Providers</div>
+    <div class="cover-date">August, 2026</div>
+    <div class="cover-note">
+      Applies to Veeam Service Provider Console 9.2 and 9.3. The integration uses the Datto Autotask PSA
+      REST API v1.0. This document describes the Autotask PSA application plugin and is not part of
+      the Veeam Service Provider Console product documentation set.
+    </div>
+  </div>
+</div>
+
+<!-- ============================= CONTENTS ============================= -->
+<div class="contents">
+<h1>Contents</h1>
+<div class="rows">
+
+  <div class="toc-l1"><span class="t">Integration with Autotask PSA</span><span class="dots"></span><span class="pg" data-t="Integration with Autotask PSA">3</span></div>
+  <div class="toc-l2"><span class="t">Integration Features</span><span class="dots"></span><span class="pg" data-t="Integration Features">3</span></div>
+  <div class="toc-l2"><span class="t">How the Integration Works</span><span class="dots"></span><span class="pg" data-t="How the Integration Works">4</span></div>
+
+  <div class="toc-l1"><span class="t">Requirements and Considerations</span><span class="dots"></span><span class="pg" data-t="Requirements and Considerations">6</span></div>
+  <div class="toc-l2"><span class="t">System Requirements</span><span class="dots"></span><span class="pg" data-t="System Requirements">6</span></div>
+  <div class="toc-l2"><span class="t">Required Privileges</span><span class="dots"></span><span class="pg" data-t="Required Privileges">6</span></div>
+  <div class="toc-l2"><span class="t">Ports, Files and Stored Data</span><span class="dots"></span><span class="pg" data-t="Ports, Files and Stored Data">7</span></div>
+  <div class="toc-l2"><span class="t">Considerations and Limitations</span><span class="dots"></span><span class="pg" data-t="Considerations and Limitations">7</span></div>
+
+  <div class="toc-l1"><span class="t">Installing the Autotask PSA Plugin</span><span class="dots"></span><span class="pg" data-t="Installing the Autotask PSA Plugin">9</span></div>
+  <div class="toc-l2"><span class="t">Installing the Plugin</span><span class="dots"></span><span class="pg" data-t="Installing the Plugin">9</span></div>
+  <div class="toc-l2"><span class="t">Upgrading the Plugin</span><span class="dots"></span><span class="pg" data-t="Upgrading the Plugin">9</span></div>
+  <div class="toc-l2"><span class="t">Removing the Plugin</span><span class="dots"></span><span class="pg" data-t="Removing the Plugin">10</span></div>
+
+  <div class="toc-l1"><span class="t">Enabling Autotask PSA Integration</span><span class="dots"></span><span class="pg" data-t="Enabling Autotask PSA Integration">11</span></div>
+  <div class="toc-l2"><span class="t">Step 1. Obtain Autotask API Credentials</span><span class="dots"></span><span class="pg" data-t="Step 1. Obtain Autotask API Credentials">11</span></div>
+  <div class="toc-l2"><span class="t">Step 2. Configure Plugin Connection</span><span class="dots"></span><span class="pg" data-t="Step 2. Configure Plugin Connection">12</span></div>
+  <div class="toc-l2"><span class="t">Step 3. Enable Integration Features</span><span class="dots"></span><span class="pg" data-t="Step 3. Enable Integration Features">14</span></div>
+
+  <div class="toc-l1"><span class="t">Configuring Companies Integration</span><span class="dots"></span><span class="pg" data-t="Configuring Companies Integration">15</span></div>
+  <div class="toc-l2"><span class="t">Prerequisites</span><span class="dots"></span><span class="pg" data-t="Prerequisites">15</span></div>
+  <div class="toc-l2"><span class="t">Companies Page</span><span class="dots"></span><span class="pg" data-t="Companies Page">15</span></div>
+  <div class="toc-l2"><span class="t">Mapping Companies Automatically</span><span class="dots"></span><span class="pg" data-t="Mapping Companies Automatically">16</span></div>
+  <div class="toc-l2"><span class="t">Mapping Companies Manually</span><span class="dots"></span><span class="pg" data-t="Mapping Companies Manually">17</span></div>
+  <div class="toc-l2"><span class="t">Removing Mapping</span><span class="dots"></span><span class="pg" data-t="Removing Mapping">18</span></div>
+
+  <div class="toc-l1"><span class="t">Configuring Consolidated Billing</span><span class="dots"></span><span class="pg" data-t="Configuring Consolidated Billing">19</span></div>
+  <div class="toc-l2"><span class="t">Prerequisites</span><span class="dots"></span><span class="pg" data-t="Prerequisites">19</span></div>
+  <div class="toc-l2"><span class="t">How Quantities Are Calculated</span><span class="dots"></span><span class="pg" data-t="How Quantities Are Calculated">20</span></div>
+  <div class="toc-l2"><span class="t">Step 1. Configure Product Mapping</span><span class="dots"></span><span class="pg" data-t="Step 1. Configure Product Mapping">21</span></div>
+  <div class="toc-l2"><span class="t">Step 2. Select a Contract</span><span class="dots"></span><span class="pg" data-t="Step 2. Select a Contract">22</span></div>
+  <div class="toc-l2"><span class="t">Step 3. Enable Services for the Contract</span><span class="dots"></span><span class="pg" data-t="Step 3. Enable Services for the Contract">22</span></div>
+  <div class="toc-l2"><span class="t">Previewing and Running Synchronization</span><span class="dots"></span><span class="pg" data-t="Previewing and Running Synchronization">23</span></div>
+  <div class="toc-l2"><span class="t">Billable Service Catalog</span><span class="dots"></span><span class="pg" data-t="Billable Service Catalog">24</span></div>
+
+  <div class="toc-l1"><span class="t">Configuring Automated Ticketing</span><span class="dots"></span><span class="pg" data-t="Configuring Automated Ticketing">25</span></div>
+  <div class="toc-l2"><span class="t">Prerequisites</span><span class="dots"></span><span class="pg" data-t="Prerequisites">25</span></div>
+  <div class="toc-l2"><span class="t">Configuring Ticket Settings</span><span class="dots"></span><span class="pg" data-t="Configuring Ticket Settings">25</span></div>
+  <div class="toc-l2"><span class="t">Enabling Alarms</span><span class="dots"></span><span class="pg" data-t="Enabling Alarms">27</span></div>
+  <div class="toc-l2"><span class="t">Ticket and Alarm Lifecycle</span><span class="dots"></span><span class="pg" data-t="Ticket and Alarm Lifecycle">28</span></div>
+  <div class="toc-l2"><span class="t">Recent Ticket Activity</span><span class="dots"></span><span class="pg" data-t="Recent Ticket Activity">28</span></div>
+
+  <div class="toc-l1"><span class="t">Refreshing Data</span><span class="dots"></span><span class="pg" data-t="Refreshing Data">30</span></div>
+
+  <div class="toc-l1"><span class="t">Monitoring the Integration</span><span class="dots"></span><span class="pg" data-t="Monitoring the Integration">32</span></div>
+  <div class="toc-l2"><span class="t">Plugin Status Page</span><span class="dots"></span><span class="pg" data-t="Plugin Status Page">32</span></div>
+  <div class="toc-l2"><span class="t">Activity Page</span><span class="dots"></span><span class="pg" data-t="Activity Page">32</span></div>
+  <div class="toc-l2"><span class="t">Obtaining Plugin Logs</span><span class="dots"></span><span class="pg" data-t="Obtaining Plugin Logs">33</span></div>
+  <div class="toc-l2"><span class="t">Troubleshooting</span><span class="dots"></span><span class="pg" data-t="Troubleshooting">33</span></div>
+
+  <div class="toc-l1"><span class="t">Terminology</span><span class="dots"></span><span class="pg" data-t="Terminology">35</span></div>
+
+  <div class="toc-l1"><span class="t">Plugin REST Endpoints</span><span class="dots"></span><span class="pg" data-t="Plugin REST Endpoints">36</span></div>
+
+</div>
+</div>
+<!-- ==================== INTEGRATION WITH AUTOTASK PSA ==================== -->
+<div class="topic">
+<h1 id="integration">Integration with Autotask PSA</h1>
+
+<p class="intro">Veeam Service Provider Console offers integration with Datto Autotask PSA to
+combine the functionality of both products and consolidate client data in one place.</p>
+
+<p>Integration offers the following capabilities:</p>
+<ul>
+  <li><span class="ui">Consolidated billing.</span> You can consolidate information about services
+    consumed by the clients into recurring service contracts in Autotask PSA.</li>
+  <li><span class="ui">Automated ticketing.</span> You can automatically create service tickets in
+    Autotask PSA based on Veeam Service Provider Console alarms.</li>
+</ul>
+
+<p>This solution is intended for service providers who both:</p>
+<ul>
+  <li>Use Veeam Service Provider Console to manage and monitor data protection operations and
+    services</li>
+  <li>Use Autotask PSA as the primary business management platform</li>
+</ul>
+
+<p>This section assumes that you have a good understanding of Autotask PSA.</p>
+
+<h2 id="features">Integration Features</h2>
+
+<p>To provide integration with Autotask PSA, Veeam Service Provider Console uses an application
+plugin. The plugin allows two applications to communicate with each other through integration
+features &mdash; integration points that allow bidirectional synchronization of data.</p>
+
+<p>The Autotask PSA plugin includes the following integration features:</p>
+
+<ul>
+  <li><span class="ui">Companies</span> is the primary integration feature that allows you to
+    select companies whose data you want to share between Veeam Service Provider Console and
+    Autotask PSA. After you enable this feature, Veeam Service Provider Console retrieves a list of
+    managed companies from Autotask PSA. You can then configure mapping to synchronize data about
+    managed companies and enable further integration. A company that is not mapped is never billed
+    and never generates tickets.</li>
+  <li><span class="ui">Ticketing</span> feature allows you to create service tickets in Autotask
+    PSA. The tickets are based on alarms triggered in Veeam Service Provider Console for a mapped
+    company. After you enable this feature, Veeam Service Provider Console retrieves the ticket
+    queues, statuses, priorities, sources and ticket types available in Autotask PSA. You can then
+    configure ticket creation parameters.</li>
+  <li><span class="ui">Billing</span> feature allows you to include information about type and
+    quantity of Veeam-powered services consumed by the clients into contracts in Autotask PSA.
+    After you enable this feature, Veeam Service Provider Console retrieves services and billing
+    codes from the Autotask PSA service catalog and the contracts available for mapped companies.
+    You can then configure mapping of services, and select contracts which will be used to bill
+    measured consumption.</li>
+</ul>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>Integration features control synchronization, not navigation. All plugin pages remain
+  available in the menu on the left whether or not the corresponding feature is enabled. A page
+  whose feature is switched off displays an informational message at the top.</p>
+</div>
+
+<h2 id="howitworks">How the Integration Works</h2>
+
+<p>The plugin is a self-contained service that Veeam Service Provider Console starts, hosts and
+supervises. It is not installed separately, and it does not require Veeam Service Provider Console
+credentials to be specified &mdash; the plugin host provisions the plugin REST API key
+automatically at installation time. The only credentials you specify are the Autotask PSA ones.</p>
+
+<figure>
+<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" font-family="Open Sans, Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="ar" markerWidth="9" markerHeight="9" refX="8" refY="3.2" orient="auto">
+      <path d="M0,0 L8,3.2 L0,6.4 z" fill="#5a6169"/>
+    </marker>
+  </defs>
+
+  <rect x="8" y="20" width="380" height="262" rx="6" fill="#f7f9fa" stroke="#c8ced4" stroke-dasharray="4 3"/>
+  <text x="20" y="40" font-size="12" font-weight="600" fill="#414141">Veeam Service Provider Console server</text>
+
+  <rect x="26" y="56" width="160" height="60" rx="4" fill="#ffffff" stroke="#00b336" stroke-width="1.6"/>
+  <text x="106" y="80" font-size="12" font-weight="600" text-anchor="middle" fill="#232323">VSPC Server</text>
+  <text x="106" y="98" font-size="10" text-anchor="middle" fill="#5a6169">REST API v3 &middot; portal UI</text>
+
+  <rect x="26" y="140" width="160" height="60" rx="4" fill="#ffffff" stroke="#00b336" stroke-width="1.6"/>
+  <text x="106" y="164" font-size="12" font-weight="600" text-anchor="middle" fill="#232323">Plugin Registry</text>
+  <text x="106" y="182" font-size="10" text-anchor="middle" fill="#5a6169">gRPC &middot; API key + discovery</text>
+
+  <rect x="216" y="56" width="156" height="144" rx="4" fill="#ffffff" stroke="#414141" stroke-width="1.6"/>
+  <text x="294" y="78" font-size="12" font-weight="600" text-anchor="middle" fill="#232323">Autotask PSA plugin</text>
+  <text x="294" y="94" font-size="9.5" text-anchor="middle" fill="#5a6169">127.0.0.1:33847</text>
+  <line x1="228" y1="104" x2="360" y2="104" stroke="#e2e6ea"/>
+  <text x="294" y="120" font-size="10" text-anchor="middle" fill="#5a6169">Company synchronization</text>
+  <text x="294" y="136" font-size="10" text-anchor="middle" fill="#5a6169">Billing reconciliation</text>
+  <text x="294" y="152" font-size="10" text-anchor="middle" fill="#5a6169">Alarm poller / ticketing</text>
+  <text x="294" y="168" font-size="10" text-anchor="middle" fill="#5a6169">Plugin UI</text>
+  <text x="294" y="188" font-size="9.5" text-anchor="middle" fill="#8a9198">SQLite &middot; DPAPI-protected secrets</text>
+
+  <rect x="26" y="222" width="346" height="42" rx="4" fill="#f0f2f4" stroke="#c8ced4"/>
+  <text x="199" y="240" font-size="10" text-anchor="middle" fill="#414141" font-weight="600">C:\ProgramData\VspcAutotaskPlugin</text>
+  <text x="199" y="255" font-size="9" text-anchor="middle" fill="#5a6169">plugin.db &middot; secret.key &middot; logs\ &mdash; preserved across upgrades</text>
+
+  <rect x="470" y="86" width="238" height="112" rx="6" fill="#fdf6f7" stroke="#c8102e" stroke-width="1.6"/>
+  <text x="589" y="112" font-size="13" font-weight="600" text-anchor="middle" fill="#c8102e">Datto Autotask PSA</text>
+  <text x="589" y="132" font-size="10" text-anchor="middle" fill="#5a6169">Companies &middot; Contracts &middot; Services</text>
+  <text x="589" y="148" font-size="10" text-anchor="middle" fill="#5a6169">Tickets &middot; Ticket notes</text>
+  <text x="589" y="164" font-size="10" text-anchor="middle" fill="#5a6169">Billing codes &middot; Picklists</text>
+  <text x="589" y="184" font-size="9" text-anchor="middle" fill="#8a9198">REST API v1.0, zone detected automatically</text>
+
+  <line x1="186" y1="86" x2="212" y2="86" stroke="#5a6169" stroke-width="1.4" marker-end="url(#ar)"/>
+  <line x1="212" y1="100" x2="186" y2="100" stroke="#5a6169" stroke-width="1.4" marker-end="url(#ar)"/>
+  <line x1="186" y1="170" x2="212" y2="170" stroke="#5a6169" stroke-width="1.4" marker-end="url(#ar)"/>
+  <line x1="372" y1="128" x2="466" y2="128" stroke="#5a6169" stroke-width="1.4" marker-end="url(#ar)"/>
+  <line x1="466" y1="150" x2="372" y2="150" stroke="#5a6169" stroke-width="1.4" marker-end="url(#ar)"/>
+  <text x="419" y="122" font-size="9" text-anchor="middle" fill="#8a9198">HTTPS</text>
+</svg>
+<figcaption><b>Plugin hosting.</b> Veeam Service Provider Console launches the plugin service on
+the loopback interface, provisions its REST API key over gRPC, and proxies the plugin UI and API to
+the portal. The plugin connects to Autotask PSA outbound over HTTPS. Plugin data is stored outside
+the package folder so that upgrades preserve it.</figcaption>
+</figure>
+
+<div class="keep">
+<h3>In This Section</h3>
+<ul>
+  <li><a href="#requirements">Requirements and Considerations</a></li>
+  <li><a href="#installing">Installing the Autotask PSA Plugin</a></li>
+  <li><a href="#enabling">Enabling Autotask PSA Integration</a></li>
+  <li><a href="#companies">Configuring Companies Integration</a></li>
+  <li><a href="#billing">Configuring Consolidated Billing</a></li>
+  <li><a href="#ticketing">Configuring Automated Ticketing</a></li>
+  <li><a href="#refresh">Refreshing Data</a></li>
+  <li><a href="#monitoring">Monitoring the Integration</a></li>
+</ul>
+</div>
+</div>
+
+<!-- ==================== REQUIREMENTS AND CONSIDERATIONS ==================== -->
+<div class="topic">
+<h1 id="requirements">Requirements and Considerations</h1>
+
+<p class="intro">Before you deploy the Autotask PSA plugin, check the system requirements, the
+privileges required to configure the integration, and the limitations described in this
+section.</p>
+
+<h2 id="sysreq">System Requirements</h2>
+
+<table class="kv">
+  <tbody>
+    <tr><td>Veeam Service Provider Console</td><td>Version 9.2 or 9.3, tested and working on both. The plugin registers with the Veeam
+      Service Provider Console plugin host and uses Veeam Service Provider Console REST API v3.</td></tr>
+    <tr><td>Operating system</td><td>The plugin runs on the machine that hosts the Veeam Service
+      Provider Console Server component. Any Windows Server version supported by Veeam Service
+      Provider Console.</td></tr>
+    <tr><td>.NET runtime</td><td>Not required. The plugin service is published as a self-contained
+      <code>win-x64</code> application.</td></tr>
+    <tr><td>Autotask PSA</td><td>An Autotask PSA instance with REST API v1.0 available and at least
+      one API-only user. The Autotask PSA zone is detected automatically from the API user name.</td></tr>
+    <tr><td>Outbound connectivity</td><td>HTTPS (TCP 443) from the Veeam Service Provider Console
+      server to the Autotask PSA web services endpoints, including
+      <code>webservices.autotask.net</code> for zone detection.</td></tr>
+    <tr><td>Web browser</td><td>Any browser supported by the Veeam Service Provider Console
+      portal.</td></tr>
+  </tbody>
+</table>
+
+<h2 id="privileges">Required Privileges</h2>
+
+<p>To perform the tasks described in this document, a user must have the following roles
+assigned.</p>
+
+<table>
+  <thead><tr><th style="width:56mm">Task</th><th>Required role</th></tr></thead>
+  <tbody>
+    <tr><td>Installing, upgrading and removing the plugin</td>
+      <td>Veeam Service Provider Console <span class="ui">Portal Administrator</span></td></tr>
+    <tr><td>Opening plugin pages and changing plugin settings</td>
+      <td>Veeam Service Provider Console <span class="ui">Portal Administrator</span> or
+        <span class="ui">Portal Operator</span>. The plugin verifies the portal user on every
+        request and rejects all other roles.</td></tr>
+    <tr><td>Creating Autotask PSA API credentials</td>
+      <td>An Autotask PSA user allowed to create API-only users, typically a member of a security
+        level with full administrative rights.</td></tr>
+    <tr><td>Autotask PSA API user</td>
+      <td>The <span class="ui">API User (system)</span> security level, with access to Companies,
+        Contracts, Services, Billing Codes and Tickets.</td></tr>
+  </tbody>
+</table>
+
+<h2 id="storeddata">Ports, Files and Stored Data</h2>
+
+<table>
+  <thead><tr><th style="width:56mm">Item</th><th>Value</th></tr></thead>
+  <tbody>
+    <tr><td>Plugin service endpoint</td><td><code>http://127.0.0.1:33847</code>. The service listens
+      on the loopback interface only. Veeam Service Provider Console proxies the plugin UI and API,
+      and the port is never exposed externally. The port can be changed in the package manifest if
+      it conflicts with another service.</td></tr>
+    <tr><td>Plugin identifier</td><td><code>7A4C3E529D144F6BB7A152AE23C90D11</code>. This is the
+      permanent identity of the plugin. It appears in the portal URL, for example
+      <code>/plugins/7A4C3E529D144F6BB7A152AE23C90D11/companies</code>.</td></tr>
+    <tr><td>Data folder</td><td><code>C:\ProgramData\VspcAutotaskPlugin</code></td></tr>
+    <tr><td>Database</td><td><code>plugin.db</code>, an SQLite database that holds company mappings,
+      service mappings, per-company billing configuration, ticket links, billing history and the
+      activity log.</td></tr>
+    <tr><td>Log files</td><td>The <code>logs</code> subfolder of the data folder.</td></tr>
+    <tr><td>Autotask PSA credentials</td><td>Encrypted at rest with Windows DPAPI and bound to the
+      Veeam Service Provider Console server machine. The secret is never returned to the browser;
+      the connection window displays <span class="ui">(unchanged)</span> in its place.</td></tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>Because the credentials are bound to the machine, moving the data folder to another server
+  invalidates the stored Autotask PSA secret. Specify the secret again in the connection window
+  after such a move.</p>
+</div>
+
+<h2 id="limitations">Considerations and Limitations</h2>
+
+<p>Consider the following limitations of the integration.</p>
+
+<ul>
+  <li><span class="ui">Companies must exist on both sides.</span> The plugin maps existing
+    companies. It does not create company accounts in Veeam Service Provider Console, tenant
+    accounts in Veeam Cloud Connect, or company records in Autotask PSA.</li>
+  <li><span class="ui">Configuration items are not created.</span> The plugin does not create
+    Autotask PSA configuration items for computers managed in Veeam Service Provider Console.
+    Tickets identify the affected object by name in the ticket title and description instead.</li>
+  <li><span class="ui">Contract type.</span> Only recurring service contracts can carry the
+    services that the plugin maintains. Time and materials, fixed price and block-hour contracts
+    are not supported.</li>
+  <li><span class="ui">Units are not converted.</span> The plugin reports a number of units. Make
+    sure that the unit of measure of the selected Autotask PSA service matches the unit of the
+    mapped Veeam Service Provider Console service.</li>
+  <li><span class="ui">Client notifications are not managed by the plugin.</span> If you want
+    mapped companies to receive Veeam Service Provider Console alarm notifications in addition to
+    Autotask PSA ticket notifications, configure alarm notifications in Veeam Service Provider
+    Console.</li>
+  <li><span class="ui">Veeam Cloud Connect sites.</span> Sites are not part of the company mapping
+    model. On the <span class="ui">Companies</span> page, narrow down the list of companies by
+    company name or by mapping status.</li>
+</ul>
+</div>
+<!-- ==================== INSTALLING THE PLUGIN ==================== -->
+<div class="topic">
+<h1 id="installing">Installing the Autotask PSA Plugin</h1>
+
+<p class="intro">The Autotask PSA integration is delivered as a custom application plugin. You
+upload the plugin package in Veeam Service Provider Console, and Veeam Service Provider Console
+hosts the plugin service and serves the plugin UI inside the portal.</p>
+
+<h2 id="install">Installing the Plugin</h2>
+
+<p>To install the Autotask PSA plugin:</p>
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console as a <span class="ui">Portal Administrator</span>.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Click <span class="ui">Upload Custom Plugin</span> and select the
+    <code>VspcAutotaskPlugin.&lt;version&gt;.nupkg</code> package.
+    <p class="substep">Veeam Service Provider Console validates the package signature, deploys the
+      plugin and starts the plugin service. Installation progress is reported in the notification
+      area.</p>
+  </li>
+  <li>Wait until installation completes. The <span class="ui">Autotask PSA</span> plugin tile
+    appears on the <span class="ui">Catalog</span> page.</li>
+  <li>Click the <span class="ui">Autotask PSA</span> plugin tile to open the plugin.</li>
+</ol>
+
+<p>At installation time, Veeam Service Provider Console registers the plugin and issues it a Veeam
+Service Provider Console REST API key automatically. Veeam Service Provider Console credentials are
+not requested at any point.</p>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>The plugin package must be signed. If the upload is rejected because of the package signature,
+  sign the package with a code signing certificate trusted by the Veeam Service Provider Console
+  server.</p>
+</div>
+
+<h2 id="upgrade">Upgrading the Plugin</h2>
+
+<p>You can upgrade the plugin from the <span class="ui">Catalog</span> page. Upgrade preserves all
+plugin data.</p>
+
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console as a <span class="ui">Portal Administrator</span>.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Click <span class="ui">Upload Custom Plugin</span> and select the newer plugin package.
+    <p class="substep">Because the plugin identifier does not change between versions, Veeam Service
+      Provider Console replaces the installed version instead of adding a second plugin.</p>
+  </li>
+  <li>Open the plugin and check the integration status. For details, see
+    <a href="#pluginstatus">Plugin Status Page</a>.</li>
+</ol>
+
+<p>Company mappings, service mappings, per-company billing configuration, ticket links, ticketing
+and billing settings, the Autotask PSA connection and the activity log are preserved during an
+upgrade, because they are stored in <code>C:\ProgramData\VspcAutotaskPlugin</code> and not in the
+package folder that the upgrade replaces.</p>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>Tickets that are open at the moment of the upgrade are not affected. The alarm poller resumes
+  from the state recorded in the plugin database, so an alarm that already has a ticket does not
+  receive a second one.</p>
+</div>
+
+<h2 id="remove">Removing the Plugin</h2>
+
+<p>To remove the Autotask PSA plugin:</p>
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console as a <span class="ui">Portal Administrator</span>.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Remove the <span class="ui">Autotask PSA</span> plugin.</li>
+</ol>
+
+<p>Before the plugin is removed, Veeam Service Provider Console instructs the plugin to purge its
+local data. The plugin deletes its database and stored credentials in response.</p>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>When you remove the plugin, consider that:</p>
+  <ul>
+    <li>Nothing is deleted in Autotask PSA. Tickets, contracts, contract services and services
+      created by the plugin remain in place.</li>
+    <li>The links between Veeam Service Provider Console alarms and Autotask PSA tickets are stored
+      in the plugin database and are lost when plugin data is purged. If you install the plugin
+      again, previously created tickets are no longer updated.</li>
+  </ul>
+</div>
+</div>
+
+<!-- ==================== ENABLING INTEGRATION ==================== -->
+<div class="topic">
+<h1 id="enabling">Enabling Autotask PSA Integration</h1>
+
+<p class="intro">To allow Veeam Service Provider Console to communicate with Autotask PSA, you must
+configure the application plugin and enable integration features.</p>
+
+<h3>Enabling Autotask PSA Integration</h3>
+
+<p>To enable integration with Autotask PSA, perform the following steps:</p>
+<ol class="steps">
+  <li><a href="#apikeys">Obtain Autotask PSA API credentials</a>.</li>
+  <li><a href="#connect">Configure plugin connection</a>.</li>
+  <li><a href="#enablefeatures">Enable integration features</a>.</li>
+</ol>
+
+<h2 id="apikeys">Step 1. Obtain Autotask API Credentials</h2>
+
+<p>In Autotask PSA, create an API-only user and save its user name, secret and integration
+code:</p>
+
+<ol class="steps">
+  <li>Log in to Autotask PSA with an account that is allowed to create API users.</li>
+  <li>In the navigation menu on the left, click <span class="ui">Admin</span> and select
+    <span class="ui">Organization Settings &amp; Users</span>.
+    <p class="substep">In some Autotask PSA versions, this menu item is named
+      <span class="ui">Account Settings &amp; Users</span>.</p>
+  </li>
+  <li>Expand <span class="ui">Resources/Users (HR)</span> and click
+    <span class="ui">Resources/Users</span>.</li>
+  <li>Click <span class="ui">New</span> and select <span class="ui">New API User</span>.</li>
+  <li>Specify the <span class="ui">First Name</span>, <span class="ui">Last Name</span> and
+    <span class="ui">Email Address</span> of the API user.</li>
+  <li>From the <span class="ui">Security Level</span> drop-down list, select
+    <span class="ui">API User (system)</span>.</li>
+  <li>Under <span class="ui">Credentials</span>, click <span class="ui">Generate Key</span> and
+    <span class="ui">Generate Secret</span>.
+    <p class="substep">The generated key is the API user name that you specify in the plugin. The
+      generated secret is the password.</p>
+  </li>
+  <li>Under <span class="ui">API Tracking Identifier</span>, select
+    <span class="ui">Custom (Internal Integration)</span> and type a name for the integration, for
+    example <code>Veeam Service Provider Console</code>.</li>
+  <li>Click <span class="ui">Save &amp; Close</span>.</li>
+  <li>Copy and save the user name, the secret and the tracking identifier value.
+    <p class="substep">The secret cannot be displayed again after you close the form.</p>
+  </li>
+</ol>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>Treat the secret as a password. The plugin stores it encrypted with Windows DPAPI on the Veeam
+  Service Provider Console server and never returns it to the browser, but anyone who holds the
+  three values can access your Autotask PSA instance.</p>
+</div>
+
+<h3>Autotask PSA Permissions</h3>
+
+<p>The API user must be able to access the following Autotask PSA entities.</p>
+
+<table class="tight">
+  <thead><tr><th style="width:46mm">Entity</th><th style="width:26mm">Access</th><th>Used for</th></tr></thead>
+  <tbody>
+    <tr><td>Companies</td><td>Read</td><td>Company list and company type for mapping</td></tr>
+    <tr><td>Contracts</td><td>Read</td><td>Contracts available for a mapped company</td></tr>
+    <tr><td>Services</td><td>Read, create</td><td>Mapping to existing services, and creating new
+      services from Veeam Service Provider Console services</td></tr>
+    <tr><td>Contract services and adjustments</td><td>Read, create</td><td>Attaching services to a
+      contract and maintaining billed quantities</td></tr>
+    <tr><td>Billing codes</td><td>Read</td><td>Allocation code assigned to services created by the
+      plugin</td></tr>
+    <tr><td>Tickets and ticket notes</td><td>Read, create, update</td><td>Automated ticketing and
+      ticket state synchronization</td></tr>
+  </tbody>
+</table>
+
+<h2 id="connect">Step 2. Configure Plugin Connection</h2>
+
+<p>Configure Autotask PSA plugin connection in Veeam Service Provider Console:</p>
+
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Click the <span class="ui">Autotask PSA</span> plugin tile.</li>
+  <li>In the <span class="ui">Autotask PSA Integration</span> window, specify connection settings:
+    <ul>
+      <li>In the <span class="ui">API user (email)</span> field, type the user name generated for
+        the API user at <a href="#apikeys">Step 1. Obtain Autotask API Credentials</a>.</li>
+      <li>In the <span class="ui">Secret</span> field, type the generated secret.</li>
+      <li>In the <span class="ui">Integration code</span> field, type the value of the custom API
+        tracking identifier.</li>
+    </ul>
+    <p class="substep">The <span class="ui">Zone</span> field is read-only. Veeam Service Provider
+      Console detects the Autotask PSA zone for the specified API user automatically and fills in
+      the field after a successful connection.</p>
+  </li>
+  <li>Click <span class="ui">Connect</span>.</li>
+  <li>In the <span class="ui">Autotask PSA Integration</span> window, check integration status.
+    <p class="substep">A successfully established connection will show the
+      <span class="ui">Healthy</span> integration status, and the window will close.</p>
+  </li>
+</ol>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>The <span class="ui">Autotask PSA Integration</span> window opens automatically the first time
+  you open the plugin while no Autotask PSA connection is configured. You can open it at any time
+  on the <span class="ui">Plugin Status</span> page: next to <span class="ui">Autotask zone</span>,
+  click <span class="ui">Change</span>.</p>
+  <p>If the plugin already stores a secret, the <span class="ui">Secret</span> field displays
+  <span class="ui">(unchanged)</span>. Leave the field empty to keep the stored secret, or type a
+  new value to replace it.</p>
+</div>
+
+<h3>Disconnecting Autotask PSA Plugin</h3>
+
+<p>If you no longer want to manage a Veeam Service Provider Console server in Autotask PSA, you can
+remove the plugin connection. After you disconnect the Autotask PSA plugin, all integration between
+Veeam Service Provider Console and Autotask PSA will be disabled: billing synchronization and
+ticket creation stop.</p>
+
+<p>To disconnect the Autotask PSA plugin:</p>
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Click the <span class="ui">Autotask PSA</span> plugin tile.</li>
+  <li>In the menu on the left, click <span class="ui">Plugin Status</span>.</li>
+  <li>Next to <span class="ui">Autotask zone</span>, click <span class="ui">Change</span>.</li>
+  <li>In the <span class="ui">Autotask PSA Integration</span> window, click
+    <span class="ui">Disconnect</span>.</li>
+  <li>In the confirmation window, click <span class="ui">Yes</span>.</li>
+</ol>
+
+<p>Disconnecting removes the stored Autotask PSA credentials. Company mappings, service mappings
+and ticket links are preserved, so if you connect the same Autotask PSA instance again, the
+configuration is restored without remapping.</p>
+
+<h2 id="enablefeatures">Step 3. Enable Integration Features</h2>
+
+<p>Select information you want to share between Veeam Service Provider Console and Autotask PSA,
+and enable the necessary features:</p>
+
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Click the <span class="ui">Autotask PSA</span> plugin tile.</li>
+  <li>In the menu on the left, click <span class="ui">Plugin Status</span>.</li>
+  <li>In the <span class="ui">Integration Settings</span> section, set toggles next to the necessary
+    integration features to <span class="ui">On</span>.
+    <p class="substep">You can also click the <span class="ui">Enable All</span> link to enable all
+      integration features. For details on integration features, see
+      <a href="#features">Integration Features</a>.</p>
+  </li>
+</ol>
+
+<p>Integration features are applied immediately. There is no separate save operation.</p>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>Toggles are unavailable until the Autotask PSA connection is configured. Until then, the
+  <span class="ui">Integration Settings</span> section displays the
+  <span class="ui">Connect Autotask to enable integration features</span> message.</p>
+</div>
+</div>
+<!-- ==================== COMPANIES ==================== -->
+<div class="topic">
+<h1 id="companies">Configuring Companies Integration</h1>
+
+<p class="intro">You can select companies whose data you want to share between Veeam Service
+Provider Console and Autotask PSA. To start sharing data of managed companies, you must configure
+mapping in Veeam Service Provider Console. Mapping enables further integration: only mapped
+companies are billed, and only mapped companies generate tickets.</p>
+
+<h2 id="companies-prereq">Prerequisites</h2>
+
+<p>Before configuring integration of managed companies, check the following prerequisites:</p>
+<ul>
+  <li>Configure Autotask PSA plugin connection. For details, see
+    <a href="#connect">Step 2. Configure Plugin Connection</a>.</li>
+  <li>Enable the <span class="ui">Companies</span> integration feature. For details, see
+    <a href="#enablefeatures">Step 3. Enable Integration Features</a>.</li>
+  <li>The companies must already exist both in Veeam Service Provider Console and in Autotask PSA.
+    For details, see <a href="#limitations">Considerations and Limitations</a>.</li>
+</ul>
+
+<h2 id="companiespage">Companies Page</h2>
+
+<p>To open the page, click the <span class="ui">Autotask PSA</span> plugin tile in
+<span class="ui">Configuration &gt; Catalog</span>, and then click
+<span class="ui">Companies</span> in the menu on the left.</p>
+
+<p>Veeam Service Provider Console will display a list of all companies managed in Veeam Service
+Provider Console, along with the Autotask PSA company that each of them is mapped to.</p>
+
+<h3>Columns</h3>
+<table class="tight">
+  <thead><tr><th style="width:56mm">Column</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><span class="ui">Status</span></td><td>Mapping status of the company:
+      <span class="ui">Mapped</span> or <span class="ui">Unmapped</span>.</td></tr>
+    <tr><td><span class="ui">Autotask Company</span></td><td>Name of the mapped Autotask PSA
+      company. A mapping created by automatic matching is marked
+      <span class="ui">(auto)</span>.</td></tr>
+    <tr><td><span class="ui">Autotask Company ID</span></td><td>Numeric identifier of the Autotask
+      PSA company. Autotask PSA reserves the identifier <code>0</code> for the record of your own
+      organization, which is a valid value.</td></tr>
+    <tr><td><span class="ui">Type</span></td><td>Type of the company configured in Autotask PSA, for
+      example <em>Customer</em> or <em>Prospect</em>.</td></tr>
+    <tr><td><span class="ui">Veeam Service Provider Console Company</span></td><td>Name of the
+      company configured in Veeam Service Provider Console.</td></tr>
+  </tbody>
+</table>
+
+<h3>Filters</h3>
+<p>To narrow down the list of companies, you can apply the following filters.</p>
+<table class="tight">
+  <thead><tr><th style="width:56mm">Filter</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><span class="ui">Company Name</span></td><td>Search companies by name. The list is
+      filtered as you type.</td></tr>
+    <tr><td><span class="ui">Status</span></td><td>Limit the list of companies by mapping status:
+      <span class="ui">Mapped</span>, <span class="ui">Unmapped</span>,
+      <span class="ui">In progress</span>, <span class="ui">Error</span>.</td></tr>
+  </tbody>
+</table>
+
+<h3>Commands</h3>
+<p>All mapping operations are performed on the companies that you select in the list. The list does
+not contain per-row action links.</p>
+<table class="tight">
+  <thead><tr><th style="width:56mm">Command</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><span class="ui">Map to</span></td><td>Map the selected company. Available when exactly
+      one unmapped company is selected.</td></tr>
+    <tr><td><span class="ui">Remove Mapping</span></td><td>Remove mapping of the selected companies.
+      Available when the selection contains at least one mapped company.</td></tr>
+    <tr><td><span class="ui">Map Companies Automatically</span></td><td>Match unmapped companies by
+      name. For details, see <a href="#automap">Mapping Companies Automatically</a>.</td></tr>
+    <tr><td><span class="ui">Refresh Data</span></td><td>Retrieve both company lists from Veeam
+      Service Provider Console and Autotask PSA. The command displays the time of the last
+      synchronization.</td></tr>
+  </tbody>
+</table>
+
+<h2 id="automap">Mapping Companies Automatically</h2>
+
+<p>Select this method if names of companies you manage in Veeam Service Provider Console are same or
+similar to their names in Autotask PSA.</p>
+
+<p>To map companies automatically:</p>
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Click the <span class="ui">Autotask PSA</span> plugin tile.</li>
+  <li>In the menu on the left, click <span class="ui">Companies</span>.</li>
+  <li>At the top of the list, click <span class="ui">Map Companies Automatically</span>.
+    <p class="substep">Veeam Service Provider Console will automatically detect companies in
+      Autotask PSA whose names are the same as the names of companies configured in Veeam Service
+      Provider Console, and will map them.</p>
+  </li>
+  <li>In the <span class="ui">Suggested Matches</span> window, review the companies that could not
+    be mapped automatically, and click a candidate to map the company to it.
+    <p class="substep">Each candidate is displayed with a match percentage.</p>
+  </li>
+</ol>
+
+<h3>How Matching Works</h3>
+<ul>
+  <li>Company names on both sides are normalized before they are compared, so differences in case,
+    punctuation and spacing do not prevent a match.</li>
+  <li>A company is mapped automatically only if exactly one unmapped Autotask PSA company matches
+    its normalized name. Ambiguous names are never mapped automatically.</li>
+  <li>If no exact match is found, up to five Autotask PSA candidates with a name similarity of
+    72&nbsp;% or higher are offered for review.</li>
+  <li>Companies that are already mapped are not processed, and an Autotask PSA company that is
+    already mapped is not offered as a candidate.</li>
+</ul>
+
+<h2 id="mapmanually">Mapping Companies Manually</h2>
+
+<p>Select this method if names of companies you manage in Veeam Service Provider Console and their
+names in Autotask PSA do not match.</p>
+
+<p>To map companies manually:</p>
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Click the <span class="ui">Autotask PSA</span> plugin tile.</li>
+  <li>In the menu on the left, click <span class="ui">Companies</span>.</li>
+  <li>From the list of companies, select an unmapped company.
+    <p class="substep">To narrow down the list of companies, use the
+      <span class="ui">Company Name</span> search or the <span class="ui">Status</span> filter.</p>
+  </li>
+  <li>At the top of the list, click <span class="ui">Map to</span>.</li>
+  <li>In the <span class="ui">Map Company</span> window, in the
+    <span class="ui">Autotask company</span> field, start typing the name of the Autotask PSA
+    company which you want to map, and select it from the list.
+    <p class="substep">The list is searchable and is filtered as you type.</p>
+  </li>
+  <li>Click <span class="ui">Map Company</span>.</li>
+  <li>Repeat steps 6&ndash;9 for all companies you want to map.</li>
+</ol>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>One Veeam Service Provider Console company can be mapped to one Autotask PSA company only.
+  Autotask PSA companies that are already mapped are not displayed in the list.</p>
+</div>
+
+<h2 id="unmap">Removing Mapping</h2>
+
+<p>If you want to stop sending data about services consumed by the company to Autotask PSA, you can
+remove mapping.</p>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>When you remove mapping for a company, consider that:</p>
+  <ul>
+    <li>Billing configuration of the company in the plugin, that is the selected contract and the
+      enabled services, will also be removed.</li>
+    <li>Contract services and quantities that have already been reported to Autotask PSA will not
+      be removed, and tickets that are open in Autotask PSA will not be closed. Update these records
+      in Autotask PSA manually if necessary.</li>
+  </ul>
+</div>
+
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Click the <span class="ui">Autotask PSA</span> plugin tile.</li>
+  <li>In the menu on the left, click <span class="ui">Companies</span>.</li>
+  <li>From the list of companies, select one or more mapped companies.</li>
+  <li>At the top of the list, click <span class="ui">Remove Mapping</span>.</li>
+  <li>In the <span class="ui">Remove Mapping</span> window, click <span class="ui">Yes</span>.</li>
+</ol>
+</div>
+
+<!-- ==================== BILLING ==================== -->
+<div class="topic">
+<h1 id="billing">Configuring Consolidated Billing</h1>
+
+<p class="intro">You can configure Veeam Service Provider Console to continuously send information
+to Autotask PSA about types and amount of services consumed by mapped companies. Autotask PSA will
+use this data to maintain quantities on recurring service contracts and generate consolidated
+invoices.</p>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>The amount of services is reported as the quantity of a contract service. The quantity depends
+  on the type of service:</p>
+  <ul>
+    <li>For services measured by actual numbers, the quantity is equal to the actual number of
+      managed objects or amount of consumed space as of the last day for which Veeam Service
+      Provider Console reported data.</li>
+    <li>For services measured for a billing period, the quantity is equal to the amount of resources
+      consumed for the billing period.</li>
+  </ul>
+  <p>Autotask PSA contracts will include the exact storage usage even if you have configured to
+  round up storage usage costs in the subscription plan. The amount of services provided free of
+  charge is defined by the selected subscription plan.</p>
+  <p>Make sure that the measurement unit of the selected Autotask PSA service is equal to the
+  measurement unit of the mapped Veeam Service Provider Console service. For details, see
+  <a href="#catalog">Billable Service Catalog</a>.</p>
+</div>
+
+<p>To configure billing consolidation, perform the following steps:</p>
+<ol class="steps">
+  <li><a href="#productmapping">Configure product mapping</a>.
+    <p class="substep">Map services from Veeam Service Provider Console to services in the Autotask
+      PSA service catalog.</p>
+  </li>
+  <li><a href="#selectcontract">Select a contract</a>.
+    <p class="substep">For every mapped company, select a contract which Autotask PSA will use to
+      bill measured consumption.</p>
+  </li>
+  <li><a href="#enableservices">Enable services for the contract</a>.
+    <p class="substep">Select the services that will be billed for the company.</p>
+  </li>
+</ol>
+
+<h2 id="billing-prereq">Prerequisites</h2>
+
+<p>Before configuring consolidated billing, check the following prerequisites:</p>
+<ul>
+  <li>Configure Autotask PSA plugin connection. For details, see
+    <a href="#connect">Step 2. Configure Plugin Connection</a>.</li>
+  <li>Enable the <span class="ui">Companies</span> and <span class="ui">Billing</span> integration
+    features. For details, see <a href="#enablefeatures">Step 3. Enable Integration
+    Features</a>.</li>
+  <li>Configure integration for the companies for which you want to consolidate billing data. For
+    details, see <a href="#companies">Configuring Companies Integration</a>.</li>
+  <li>The companies for which you want to consolidate billing data must have at least one recurring
+    service contract in Autotask PSA.</li>
+  <li>A subscription plan must be configured in Veeam Service Provider Console. The plugin uses it
+    as the price reference for services that it creates in Autotask PSA.</li>
+</ul>
+
+<h2 id="quantities">How Quantities Are Calculated</h2>
+
+<p>The plugin reads usage counters from Veeam Service Provider Console, converts them into billable
+units, and keeps the quantity of every Autotask PSA contract service aligned with the measured
+value. Quantities are maintained through contract service adjustments, which record the change in
+units rather than an absolute value.</p>
+
+<figure>
+<svg viewBox="0 0 720 168" xmlns="http://www.w3.org/2000/svg" font-family="Open Sans, Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="ar2" markerWidth="9" markerHeight="9" refX="8" refY="3.2" orient="auto">
+      <path d="M0,0 L8,3.2 L0,6.4 z" fill="#5a6169"/>
+    </marker>
+  </defs>
+  <rect x="4" y="34" width="132" height="78" rx="4" fill="#ffffff" stroke="#00b336" stroke-width="1.5"/>
+  <text x="70" y="60" font-size="11" font-weight="600" text-anchor="middle" fill="#232323">VSPC usage</text>
+  <text x="70" y="77" font-size="9.5" text-anchor="middle" fill="#5a6169">counters per company</text>
+  <text x="70" y="93" font-size="9.5" text-anchor="middle" fill="#5a6169">per day</text>
+
+  <rect x="168" y="34" width="132" height="78" rx="4" fill="#ffffff" stroke="#c8ced4" stroke-width="1.5"/>
+  <text x="234" y="56" font-size="11" font-weight="600" text-anchor="middle" fill="#232323">Aggregation</text>
+  <text x="234" y="73" font-size="9.5" text-anchor="middle" fill="#5a6169">last day, or sum</text>
+  <text x="234" y="88" font-size="9.5" text-anchor="middle" fill="#5a6169">over the period</text>
+  <text x="234" y="103" font-size="9.5" text-anchor="middle" fill="#8a9198">bytes to GB</text>
+
+  <rect x="332" y="34" width="132" height="78" rx="4" fill="#ffffff" stroke="#c8ced4" stroke-width="1.5"/>
+  <text x="398" y="56" font-size="11" font-weight="600" text-anchor="middle" fill="#232323">Difference</text>
+  <text x="398" y="73" font-size="9.5" text-anchor="middle" fill="#5a6169">measured units</text>
+  <text x="398" y="88" font-size="9.5" text-anchor="middle" fill="#5a6169">minus current units</text>
+  <text x="398" y="103" font-size="9.5" text-anchor="middle" fill="#8a9198">zero: nothing written</text>
+
+  <rect x="496" y="34" width="220" height="78" rx="4" fill="#fdf6f7" stroke="#c8102e" stroke-width="1.5"/>
+  <text x="606" y="56" font-size="11" font-weight="600" text-anchor="middle" fill="#c8102e">Autotask contract service</text>
+  <text x="606" y="75" font-size="9.5" text-anchor="middle" fill="#5a6169">contract service adjustment</text>
+  <text x="606" y="91" font-size="9.5" text-anchor="middle" fill="#5a6169">unit change = difference</text>
+  <text x="606" y="106" font-size="9.5" text-anchor="middle" fill="#8a9198">effective date: current day, UTC</text>
+
+  <line x1="136" y1="73" x2="164" y2="73" stroke="#5a6169" stroke-width="1.4" marker-end="url(#ar2)"/>
+  <line x1="300" y1="73" x2="328" y2="73" stroke="#5a6169" stroke-width="1.4" marker-end="url(#ar2)"/>
+  <line x1="464" y1="73" x2="492" y2="73" stroke="#5a6169" stroke-width="1.4" marker-end="url(#ar2)"/>
+</svg>
+<figcaption><b>Billing reconciliation.</b> The plugin compares the measured quantity with the
+quantity currently recorded on the contract service and reports only the difference, so that
+repeated runs on the same day do not increase the billed amount.</figcaption>
+</figure>
+
+<p>Two aggregation rules apply, depending on the service:</p>
+<ul>
+  <li><span class="ui">Services measured by actual numbers.</span> The quantity is the most recently
+    reported value: the actual number of managed objects, or the amount of consumed space, as of the
+    last day for which Veeam Service Provider Console reported data.</li>
+  <li><span class="ui">Services measured for a billing period.</span> The quantity is the total
+    amount consumed during the billing period. Data transfer out is measured this way.</li>
+</ul>
+
+<p>Storage counters are reported by Veeam Service Provider Console in bytes and are converted to
+gigabytes before they are sent to Autotask PSA.</p>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>Contracts have their own start and end dates in Autotask PSA. An adjustment whose effective
+  date is outside the contract period is rejected by Autotask PSA, and the corresponding line is
+  reported with the <span class="ui">error</span> status in the synchronization results.</p>
+</div>
+
+<h2 id="productmapping">Step 1. Configure Product Mapping</h2>
+
+<p>Enable Veeam Service Provider Console services that you want to bill in Autotask PSA:</p>
+
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Click the <span class="ui">Autotask PSA</span> plugin tile.</li>
+  <li>In the menu on the left, click <span class="ui">Billing</span>.</li>
+  <li>Navigate to the <span class="ui">Product Mapping</span> tab.</li>
+  <li>At the top of the page, from the <span class="ui">Use this subscription plan to define price
+    for the service</span> drop-down list, select a subscription plan from which you want to obtain
+    service prices.</li>
+  <li>Check the remaining billing settings and click <span class="ui">Apply</span>:
+    <ul>
+      <li><span class="ui">Use this unit of measure for all allocated storage</span> &mdash; fixed
+        to <span class="ui">TB</span> in this version.</li>
+      <li><span class="ui">Billing period start day</span> &mdash; day of month the billing period
+        starts, from 1 to 28. Default: 1.</li>
+      <li><span class="ui">Daily sync hour (UTC)</span> &mdash; hour at which automatic billing
+        synchronization runs. Default: 1.</li>
+      <li><span class="ui">Default billing code (for created services)</span> &mdash; Autotask PSA
+        allocation code assigned to services that the plugin creates.</li>
+    </ul>
+  </li>
+  <li>Under the name of a Veeam Service Provider Console service group, set a toggle to
+    <span class="ui">Enabled</span>.</li>
+  <li>For each service in the service group, select a necessary option from the
+    <span class="ui">Mode</span> drop-down list:
+    <ul>
+      <li><span class="ui">Existing Autotask service</span>
+        <p class="substep">In this case, Veeam Service Provider Console will map the service to the
+          selected active Autotask PSA service.</p>
+      </li>
+      <li><span class="ui">Create new service</span>
+        <p class="substep">In this case, Veeam Service Provider Console will create a new service in
+          the Autotask PSA service catalog and map it to the selected service. Specify the
+          <span class="ui">New service name</span> and <span class="ui">Unit price</span>. You can
+          change this price at any time in the Autotask PSA catalog.</p>
+      </li>
+      <li><span class="ui">Do not bill</span>
+        <p class="substep">In this case, Veeam Service Provider Console will skip the selected
+          service and will not map it to any service in Autotask PSA.</p>
+      </li>
+    </ul>
+  </li>
+  <li>Click <span class="ui">Save</span> in every service row that you have changed.</li>
+</ol>
+
+<h2 id="selectcontract">Step 2. Select a Contract</h2>
+
+<p>Select contracts which will be used to bill Veeam Service Provider Console services:</p>
+
+<ol class="steps">
+  <li>On the <span class="ui">Billing</span> page, navigate to the
+    <span class="ui">Contracts</span> tab.</li>
+  <li>From the list of mapped companies, select a company for which you want to configure billing,
+    and click <span class="ui">Configure</span> in its row.</li>
+  <li>In the <span class="ui">Contracts</span> window, from the
+    <span class="ui">Contract</span> drop-down list, select a necessary contract.
+    <p class="substep">If the company has no contracts in Autotask PSA, the window displays the
+      <span class="ui">No contracts found for this company in Autotask</span> message. Create a
+      recurring service contract in Autotask PSA, and then click
+      <span class="ui">Refresh Data</span> on the <span class="ui">Contracts</span> tab.</p>
+  </li>
+  <li>Proceed to <a href="#enableservices">Step 3. Enable Services for the Contract</a> without
+    closing the window.</li>
+</ol>
+
+<h2 id="enableservices">Step 3. Enable Services for the Contract</h2>
+
+<p>Select the services that will be billed on the selected contract:</p>
+
+<ol class="steps">
+  <li>In the <span class="ui">Contracts</span> window, under
+    <span class="ui">Enabled Services</span>, select the services that you want to bill for this
+    company.
+    <p class="substep">Only the services that you have mapped on the
+      <span class="ui">Product Mapping</span> tab are displayed. If the list is empty, return to the
+      <span class="ui">Product Mapping</span> tab and map at least one service.</p>
+  </li>
+  <li>Click <span class="ui">Save</span>.</li>
+  <li>Repeat the procedure for all companies for which you want to consolidate billing data.</li>
+</ol>
+
+<p>Veeam Service Provider Console will attach the mapped services to the selected contract and start
+sending information about the quantity of consumed services to Autotask PSA.</p>
+
+<p>To stop billing a company without removing its company mapping, click
+<span class="ui">Disable Billing</span> in the company row, and then click
+<span class="ui">Yes</span>.</p>
+
+<h2 id="syncbilling">Previewing and Running Synchronization</h2>
+
+<p>Billing synchronization runs automatically once a day at the configured hour. You can also run it
+manually, and you can check what a run will do before any data is sent to Autotask PSA.</p>
+
+<table>
+  <thead><tr><th style="width:52mm">Command</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><span class="ui">Preview (Dry Run)</span></td><td>Calculates the measured units, the
+      current units and the resulting difference for every configured company and service, and
+      records the outcome in the billing history without sending any data to Autotask PSA. Use this
+      command to validate a new configuration.</td></tr>
+    <tr><td><span class="ui">Sync Now</span></td><td>Performs the same calculation and reports the
+      resulting contract service adjustments to Autotask PSA. Veeam Service Provider Console will
+      ask you to confirm the operation.</td></tr>
+    <tr><td><span class="ui">Refresh Data</span></td><td>Retrieves mapped companies and their
+      Autotask PSA contracts. The command displays the time of the last synchronization.</td></tr>
+  </tbody>
+</table>
+
+<p>Both commands display the <span class="ui">Synchronization</span> results list.</p>
+
+<table class="tight">
+  <thead><tr><th style="width:36mm">Column</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><span class="ui">Company</span></td><td>Veeam Service Provider Console company.</td></tr>
+    <tr><td><span class="ui">Service</span></td><td>Veeam Service Provider Console service.</td></tr>
+    <tr><td><span class="ui">Current</span></td><td>Units currently recorded on the Autotask PSA
+      contract service.</td></tr>
+    <tr><td><span class="ui">Measured</span></td><td>Units calculated from Veeam Service Provider
+      Console usage data.</td></tr>
+    <tr><td><span class="ui">Delta</span></td><td>Difference that will be, or that was, reported to
+      Autotask PSA.</td></tr>
+    <tr><td><span class="ui">Status</span></td><td>Result of the operation:
+      <span class="ui">adjusted</span> &mdash; reported to Autotask PSA;
+      <span class="ui">planned</span> &mdash; result of a dry run;
+      <span class="ui">no-change</span> &mdash; the difference was zero and nothing was reported;
+      <span class="ui">skipped</span> &mdash; the line was not eligible for reporting;
+      <span class="ui">error</span> &mdash; Autotask PSA rejected the operation.</td></tr>
+    <tr><td><span class="ui">Message</span></td><td>Details for the line, including the Autotask PSA
+      error message where applicable.</td></tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>Adjustments are reported with the effective date set to the current day in UTC. Running
+  synchronization twice on the same day is safe: the second run calculates a difference of zero for
+  the lines that have not changed and reports nothing.</p>
+</div>
+
+<h2 id="catalog">Billable Service Catalog</h2>
+
+<p>The following Veeam Service Provider Console services can be mapped to Autotask PSA services. The
+<span class="ui">Measurement</span> column indicates which aggregation rule applies. For details,
+see <a href="#quantities">How Quantities Are Calculated</a>.</p>
+
+<table class="tight">
+  <thead>
+    <tr><th style="width:42mm">Service group</th><th style="width:56mm">Service</th>
+      <th style="width:18mm">Unit</th><th>Measurement</th></tr>
+  </thead>
+  <tbody>
+    <tr><td rowspan="6">Managed Backup</td><td>Managed VMs</td><td>VMs</td><td>Actual number</td></tr>
+    <tr><td>Backed-up VMs</td><td>VMs</td><td>Actual number</td></tr>
+    <tr><td>CDP-protected VMs</td><td>VMs</td><td>Actual number</td></tr>
+    <tr><td>Managed server agents</td><td>agents</td><td>Actual number</td></tr>
+    <tr><td>Managed workstation agents</td><td>agents</td><td>Actual number</td></tr>
+    <tr><td>Managed users</td><td>users</td><td>Actual number</td></tr>
+
+    <tr><td rowspan="5">Cloud Connect Backup</td><td>VM cloud backups</td><td>VMs</td><td>Actual number</td></tr>
+    <tr><td>Server agent cloud backups</td><td>agents</td><td>Actual number</td></tr>
+    <tr><td>Workstation agent cloud backups</td><td>agents</td><td>Actual number</td></tr>
+    <tr><td>Cloud repository consumption</td><td>GB</td><td>Actual number, bytes converted to GB</td></tr>
+    <tr><td>Data transfer out</td><td>GB</td><td>Billing period, bytes converted to GB</td></tr>
+
+    <tr><td rowspan="2">Cloud Connect Replication</td><td>VM cloud replicas</td><td>VMs</td><td>Actual number</td></tr>
+    <tr><td>Replica storage consumption</td><td>GB</td><td>Actual number, bytes converted to GB</td></tr>
+
+    <tr><td rowspan="2">Microsoft 365 Backup</td><td>Protected Microsoft 365 users</td><td>users</td><td>Actual number</td></tr>
+    <tr><td>Microsoft 365 backup size</td><td>GB</td><td>Actual number, bytes converted to GB</td></tr>
+
+    <tr><td rowspan="2">File Share Backup</td><td>Protected file shares</td><td>shares</td><td>Actual number</td></tr>
+    <tr><td>File share backup size</td><td>GB</td><td>Actual number, bytes converted to GB</td></tr>
+
+    <tr><td>Public Cloud Backup</td><td>Public cloud backup size</td><td>GB</td><td>Actual number, bytes converted to GB</td></tr>
+  </tbody>
+</table>
+</div>
+<!-- ==================== TICKETING ==================== -->
+<div class="topic">
+<h1 id="ticketing">Configuring Automated Ticketing</h1>
+
+<p class="intro">You can configure Veeam Service Provider Console to send information about triggered
+alarms to Autotask PSA and to create service tickets based on alarm data.</p>
+
+<h2 id="ticketing-prereq">Prerequisites</h2>
+
+<p>Before configuring automated ticketing, check the following prerequisites:</p>
+<ul>
+  <li>Configure Autotask PSA plugin connection. For details, see
+    <a href="#connect">Step 2. Configure Plugin Connection</a>.</li>
+  <li>Enable the <span class="ui">Companies</span> and <span class="ui">Ticketing</span> integration
+    features. For details, see <a href="#enablefeatures">Step 3. Enable Integration
+    Features</a>.</li>
+  <li>Configure integration for the companies for which you want to create tickets automatically.
+    For details, see <a href="#companies">Configuring Companies Integration</a>. Alarms triggered for
+    unmapped companies never create tickets.</li>
+  <li>In Autotask PSA, the queue on which you want to create tickets automatically must exist, and
+    the ticket statuses that you want to use for new and for closed tickets must be available.</li>
+</ul>
+
+<h2 id="ticketsettings">Configuring Ticket Settings</h2>
+
+<p>To configure parameters of tickets created by Veeam Service Provider Console:</p>
+
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Click the <span class="ui">Autotask PSA</span> plugin tile.</li>
+  <li>In the menu on the left, click <span class="ui">Ticketing</span>.</li>
+  <li>At the top of the page, click <span class="ui">Ticket Settings</span> and configure ticketing
+    settings as described in the table below.</li>
+  <li>Click <span class="ui">Save</span>.</li>
+</ol>
+
+<p>Queue, status, priority, source and ticket type values are retrieved from your Autotask PSA
+instance when the window opens. Each drop-down list is searchable.</p>
+
+<table>
+  <thead><tr><th style="width:56mm">Setting</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><span class="ui">Queue</span></td><td>Autotask PSA queue on which tickets will be
+      created.</td></tr>
+    <tr><td><span class="ui">Status for new tickets</span></td><td>Status assigned to a ticket when
+      Veeam Service Provider Console creates it.</td></tr>
+    <tr><td><span class="ui">Status for closed tickets</span></td><td>Status assigned to a ticket
+      when Veeam Service Provider Console closes it because the alarm used to create this ticket was
+      resolved.</td></tr>
+    <tr><td><span class="ui">Priority &mdash; Warning alarms</span></td><td>Priority that must be
+      assigned to tickets created for triggered <em>Warning</em> alarms.</td></tr>
+    <tr><td><span class="ui">Priority &mdash; Error alarms</span></td><td>Priority that must be
+      assigned to tickets created for triggered <em>Error</em> alarms.</td></tr>
+    <tr><td><span class="ui">Source</span></td><td>Optional. Autotask PSA ticket source recorded on
+      created tickets.</td></tr>
+    <tr><td><span class="ui">Ticket type</span></td><td>Optional. Autotask PSA ticket type recorded
+      on created tickets.</td></tr>
+    <tr><td><span class="ui">Delay before ticket (minutes)</span></td><td>Time period after which
+      the ticket for a triggered alarm must be created. An alarm that is resolved within this period
+      never becomes a ticket, which suppresses tickets for transient conditions. Default: 5.</td></tr>
+    <tr><td><span class="ui">Due date offset (hours)</span></td><td>The ticket due date is set to the
+      creation time plus this offset. Autotask PSA requires a due date on most ticket categories.
+      Default: 24.</td></tr>
+    <tr><td><span class="ui">Alarm poll interval (seconds)</span></td><td>Period at which Veeam
+      Service Provider Console is polled for alarm state. Default: 120. Values are limited to the
+      range from 30 to 3600.</td></tr>
+    <tr><td><span class="ui">Close ticket when alarm resolves</span></td><td>When an alarm is
+      resolved in Veeam Service Provider Console, the status of the ticket created for this alarm
+      changes to the status for closed tickets. Enabled by default.</td></tr>
+    <tr><td><span class="ui">Resolve alarm when ticket closes</span></td><td>When a ticket is closed
+      in Autotask PSA, the alarm used to create this ticket is resolved in Veeam Service Provider
+      Console. Enabled by default.</td></tr>
+    <tr><td><span class="ui">Add note on re-trigger</span></td><td>When an alarm that already has an
+      open ticket is triggered again, a ticket note is added to the existing ticket instead of
+      creating a second ticket. Enabled by default.</td></tr>
+    <tr><td><span class="ui">Acknowledged counts as resolved</span></td><td>Alarms acknowledged in
+      Veeam Service Provider Console are processed in the same way as resolved alarms when tickets
+      are closed. Enabled by default.</td></tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>The <span class="ui">Status for new tickets</span> and
+  <span class="ui">Status for closed tickets</span> settings must be set to different Autotask PSA
+  statuses. If both settings use the same status, the plugin cannot distinguish an open ticket from
+  a closed one: every new ticket is reported as already closed, and duplicate tickets are created
+  for the same alarm. Veeam Service Provider Console does not save such a combination, and stops the
+  alarm poll if it is detected.</p>
+</div>
+
+<h2 id="enablealarms">Enabling Alarms</h2>
+
+<p>To enable automatic creation of tickets based on Veeam Service Provider Console alarms:</p>
+
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Click the <span class="ui">Autotask PSA</span> plugin tile.</li>
+  <li>In the menu on the left, click <span class="ui">Ticketing</span>.
+    <p class="substep">Veeam Service Provider Console will display a list of all enabled alarms,
+      except alarms for the <em>Cloud Gateway</em>, <em>Internal</em>, <em>Plugin</em>,
+      <em>Site</em> and <em>User</em> objects.</p>
+  </li>
+  <li>On the <span class="ui">Alarms</span> tab, from the list of alarms, select alarms for which you
+    want to create tickets.
+    <p class="substep">To narrow down the list of alarms, use the
+      <span class="ui">Alarm Name</span> search or the <span class="ui">Status</span> filter.</p>
+  </li>
+  <li>At the top of the list, click <span class="ui">Enable</span>.</li>
+</ol>
+
+<p>To stop creating tickets for an alarm, select the alarm and click
+<span class="ui">Disable</span>. To retrieve the list of alarms from Veeam Service Provider Console
+again, click <span class="ui">Refresh Data</span>.</p>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>Veeam Service Provider Console records the moment when ticketing is enabled for the first time.
+  Alarms that were already triggered before that moment do not create tickets. This prevents a
+  backlog of historical alarms from being reported to your Autotask PSA queue when the integration
+  is enabled.</p>
+</div>
+
+<h2 id="lifecycle">Ticket and Alarm Lifecycle</h2>
+
+<figure>
+<svg viewBox="0 0 720 232" xmlns="http://www.w3.org/2000/svg" font-family="Open Sans, Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="ar3" markerWidth="9" markerHeight="9" refX="8" refY="3.2" orient="auto">
+      <path d="M0,0 L8,3.2 L0,6.4 z" fill="#5a6169"/>
+    </marker>
+    <marker id="ar3r" markerWidth="9" markerHeight="9" refX="8" refY="3.2" orient="auto">
+      <path d="M0,0 L8,3.2 L0,6.4 z" fill="#c8102e"/>
+    </marker>
+  </defs>
+
+  <rect x="4" y="78" width="92" height="52" rx="4" fill="#ffffff" stroke="#00b336" stroke-width="1.5"/>
+  <text x="50" y="98" font-size="10.5" font-weight="600" text-anchor="middle" fill="#232323">Alarm</text>
+  <text x="50" y="116" font-size="10.5" font-weight="600" text-anchor="middle" fill="#232323">triggered</text>
+
+  <rect x="160" y="78" width="92" height="52" rx="4" fill="#fffaf0" stroke="#c47b00" stroke-width="1.5"/>
+  <text x="206" y="100" font-size="10.5" font-weight="600" text-anchor="middle" fill="#232323">Pending</text>
+  <text x="206" y="115" font-size="8.5" text-anchor="middle" fill="#5a6169">delay period</text>
+
+  <rect x="316" y="78" width="92" height="52" rx="4" fill="#f2f8f4" stroke="#00b336" stroke-width="1.5"/>
+  <text x="362" y="100" font-size="10.5" font-weight="600" text-anchor="middle" fill="#232323">Open</text>
+  <text x="362" y="115" font-size="8.5" text-anchor="middle" fill="#5a6169">ticket created</text>
+
+  <rect x="472" y="78" width="92" height="52" rx="4" fill="#f0f2f4" stroke="#5a6169" stroke-width="1.5"/>
+  <text x="518" y="100" font-size="10.5" font-weight="600" text-anchor="middle" fill="#232323">Closed</text>
+  <text x="518" y="115" font-size="8.5" text-anchor="middle" fill="#5a6169">closed status</text>
+
+  <rect x="628" y="78" width="88" height="52" rx="4" fill="#fdf6f7" stroke="#c8102e" stroke-width="1.4"/>
+  <text x="672" y="100" font-size="10" font-weight="600" text-anchor="middle" fill="#c8102e">Autotask</text>
+  <text x="672" y="114" font-size="10" font-weight="600" text-anchor="middle" fill="#c8102e">ticket</text>
+
+  <rect x="160" y="8" width="92" height="34" rx="4" fill="#f7f9fa" stroke="#c8ced4"/>
+  <text x="206" y="30" font-size="10" text-anchor="middle" fill="#5a6169">Cancelled</text>
+
+  <rect x="316" y="176" width="92" height="34" rx="4" fill="#ffffff" stroke="#c8ced4"/>
+  <text x="362" y="198" font-size="10" text-anchor="middle" fill="#5a6169">Note added</text>
+
+  <line x1="96" y1="104" x2="156" y2="104" stroke="#5a6169" stroke-width="1.4" marker-end="url(#ar3)"/>
+  <line x1="252" y1="104" x2="312" y2="104" stroke="#5a6169" stroke-width="1.4" marker-end="url(#ar3)"/>
+  <text x="282" y="96" font-size="8" text-anchor="middle" fill="#8a9198">delay elapsed</text>
+  <line x1="408" y1="104" x2="468" y2="104" stroke="#5a6169" stroke-width="1.4" marker-end="url(#ar3)"/>
+  <text x="438" y="96" font-size="8" text-anchor="middle" fill="#8a9198">alarm resolved</text>
+
+  <line x1="206" y1="78" x2="206" y2="46" stroke="#5a6169" stroke-width="1.4" marker-end="url(#ar3)"/>
+  <text x="262" y="34" font-size="8" fill="#8a9198">alarm resolved within the delay period</text>
+
+  <line x1="362" y1="130" x2="362" y2="172" stroke="#5a6169" stroke-width="1.4" marker-end="url(#ar3)"/>
+  <text x="372" y="158" font-size="8" fill="#8a9198">alarm triggered again</text>
+
+  <line x1="564" y1="94" x2="624" y2="94" stroke="#c8102e" stroke-width="1.4" marker-end="url(#ar3r)"/>
+  <line x1="624" y1="116" x2="568" y2="116" stroke="#c8102e" stroke-width="1.4" marker-end="url(#ar3r)"/>
+  <text x="672" y="149" font-size="8" text-anchor="middle" fill="#8a9198">closing the ticket</text>
+  <text x="672" y="163" font-size="8" text-anchor="middle" fill="#8a9198">resolves the alarm</text>
+</svg>
+<figcaption><b>Ticket states.</b> States are displayed on the
+<span class="ui">Recent Ticket Activity</span> tab. A ticket also enters the
+<span class="ui">Error</span> state if Autotask PSA rejects the create or update operation; Veeam
+Service Provider Console retries the operation at the next alarm poll.</figcaption>
+</figure>
+
+<p>Veeam Service Provider Console polls alarm state at the configured interval and reconciles both
+sides at every poll:</p>
+<ul>
+  <li>An alarm triggered for a mapped company on an enabled alarm enters the
+    <span class="ui">Pending</span> state. If the alarm is resolved before the delay period elapses,
+    it changes to the <span class="ui">Cancelled</span> state and no ticket is created.</li>
+  <li>After the delay period elapses, a ticket is created in the configured queue with the status for
+    new tickets, the priority that matches the alarm severity, and a due date offset from the
+    creation time. The ticket contains the company, the alarm name and the affected object.</li>
+  <li>If the same alarm is triggered again while its ticket is open, a note is added to the existing
+    ticket instead of creating a second ticket.</li>
+  <li>When the alarm is resolved, or acknowledged if the
+    <span class="ui">Acknowledged counts as resolved</span> setting is enabled, the status of the
+    ticket changes to the status for closed tickets.</li>
+  <li>Conversely, when you close the ticket in Autotask PSA, Veeam Service Provider Console resolves
+    the alarm used to create this ticket.</li>
+</ul>
+
+<p>The synchronization period for these actions is equal to the alarm poll interval, so a change
+made on either side is reflected on the other side within one poll. For details, see
+<a href="#refresh">Refreshing Data</a>.</p>
+
+<h2 id="ticketactivity">Recent Ticket Activity</h2>
+
+<p>The <span class="ui">Recent Ticket Activity</span> tab of the
+<span class="ui">Ticketing</span> page displays the operations performed by the ticket engine. Use
+this tab to check that the integration works as expected.</p>
+
+<table class="tight">
+  <thead><tr><th style="width:36mm">Column</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><span class="ui">Status</span></td><td>State of the link between the alarm and the
+      ticket: <span class="ui">Pending</span>, <span class="ui">Open</span>,
+      <span class="ui">Closed</span>, <span class="ui">Cancelled</span> or
+      <span class="ui">Error</span>.</td></tr>
+    <tr><td><span class="ui">Ticket</span></td><td>Number of the Autotask PSA ticket.</td></tr>
+    <tr><td><span class="ui">Company</span></td><td>Company for which the alarm was triggered.</td></tr>
+    <tr><td><span class="ui">Alarm</span></td><td>Alarm that was triggered.</td></tr>
+    <tr><td><span class="ui">Object</span></td><td>Managed object associated with the triggered
+      alarm.</td></tr>
+    <tr><td><span class="ui">Updated</span></td><td>Time when the state last changed.</td></tr>
+    <tr><td><span class="ui">Message</span></td><td>Last reported status, or the error message if the
+      state is <span class="ui">Error</span>.</td></tr>
+  </tbody>
+</table>
+
+<p>To narrow down the list, use the search field to find a company, alarm, object or ticket number,
+and the <span class="ui">Status</span> filter to display a specific state. To run an alarm poll
+immediately instead of waiting for the configured interval, click
+<span class="ui">Poll Alarms Now</span>. Veeam Service Provider Console will report how many alarm
+events were processed and how many tickets were created, closed and updated with notes.</p>
+</div>
+
+<!-- ==================== REFRESHING DATA ==================== -->
+<div class="topic">
+<h1 id="refresh">Refreshing Data</h1>
+
+<p class="intro">After you configure integration features, the data between Veeam Service Provider
+Console and Autotask PSA will be synchronized automatically. To synchronize the necessary data
+immediately, you can refresh it manually.</p>
+
+<h3>Synchronization Intervals</h3>
+
+<table>
+  <thead><tr><th style="width:56mm">Data</th><th style="width:36mm">Interval</th><th>Notes</th></tr></thead>
+  <tbody>
+    <tr><td>Company lists from both applications</td><td>Every 4 hours</td>
+      <td>Used on the <span class="ui">Companies</span> page and in the mapping windows.</td></tr>
+    <tr><td>Alarm state and ticket reconciliation</td><td>Every 120 seconds</td>
+      <td>Configured by the <span class="ui">Alarm poll interval (seconds)</span> setting in the
+        <span class="ui">Ticket Settings</span> window, from 30 to 3600 seconds.</td></tr>
+    <tr><td>Billing reconciliation</td><td>Once a day</td>
+      <td>At the hour configured by the <span class="ui">Daily sync hour (UTC)</span> setting on the
+        <span class="ui">Product Mapping</span> tab. Default: 1.</td></tr>
+  </tbody>
+</table>
+
+<h3>Refreshing Data Manually</h3>
+
+<p>To synchronize the necessary data immediately, you can refresh it manually:</p>
+<ol class="steps">
+  <li>Log in to Veeam Service Provider Console.</li>
+  <li>At the top right corner of the Veeam Service Provider Console window, click
+    <span class="ui">Configuration</span>.</li>
+  <li>In the configuration menu on the left, click <span class="ui">Catalog</span>.</li>
+  <li>Click the <span class="ui">Autotask PSA</span> plugin tile.</li>
+  <li>In the menu on the left, click the section for which you want to refresh data:
+    <span class="ui">Companies</span>, <span class="ui">Ticketing</span>,
+    <span class="ui">Billing</span> (<span class="ui">Contracts</span> tab).</li>
+  <li>At the top of the page, click <span class="ui">Refresh Data</span>.</li>
+</ol>
+
+<p>Every <span class="ui">Refresh Data</span> command displays the time of the last synchronization
+for the corresponding page.</p>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>Two more commands are available in addition to <span class="ui">Refresh Data</span>:</p>
+  <ul>
+    <li><span class="ui">Poll Alarms Now</span> on the
+      <span class="ui">Ticketing &gt; Recent Ticket Activity</span> tab runs a full ticket
+      reconciliation immediately.</li>
+    <li><span class="ui">Sync Now</span> on the <span class="ui">Billing &gt; Contracts</span> tab
+      runs billing reconciliation immediately. For details, see
+      <a href="#syncbilling">Previewing and Running Synchronization</a>.</li>
+  </ul>
+</div>
+</div>
+<!-- ==================== MONITORING ==================== -->
+<div class="topic">
+<h1 id="monitoring">Monitoring the Integration</h1>
+
+<p class="intro">You can check the health of the integration, review the operations performed by the
+plugin, and collect plugin log files.</p>
+
+<h2 id="pluginstatus">Plugin Status Page</h2>
+
+<p>The <span class="ui">Plugin Status</span> page is the first page of the plugin and reports the
+state of the integration.</p>
+
+<table>
+  <thead><tr><th style="width:48mm">Field</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><span class="ui">Status</span></td><td>State of the connection to Autotask PSA:
+      <ul>
+        <li><span class="ui">Configured</span> &mdash; the plugin stores Autotask PSA credentials and
+          a check against the Autotask PSA API succeeded.</li>
+        <li><span class="ui">Connection error</span> &mdash; credentials are stored, but the check
+          failed. The reason is displayed below the field.</li>
+        <li><span class="ui">Not configured</span> &mdash; the connection to Autotask PSA has not
+          been configured.</li>
+      </ul>
+    </td></tr>
+    <tr><td><span class="ui">Last update</span></td><td>Time when the plugin last refreshed cached
+      data or performed an alarm poll.</td></tr>
+    <tr><td><span class="ui">Autotask zone</span></td><td>Autotask PSA API zone detected for the
+      configured API user. To open the connection window, click
+      <span class="ui">Change</span>.</td></tr>
+    <tr><td><span class="ui">Integration Settings</span></td><td>Toggles for the
+      <span class="ui">Companies</span>, <span class="ui">Ticketing</span> and
+      <span class="ui">Billing</span> integration features, and the
+      <span class="ui">Enable All</span> link.</td></tr>
+  </tbody>
+</table>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>The result of the connection check is cached for a short period, so the status reflects an
+  actual call to Autotask PSA rather than the presence of stored credentials, without a request on
+  every page load.</p>
+</div>
+
+<h2 id="activity">Activity Page</h2>
+
+<p>The <span class="ui">Activity</span> page displays the plugin event log: connection changes,
+company mapping operations, billing runs and their results, and ticket engine operations. Every
+record contains the time, severity level, functional area and message.</p>
+
+<p>To narrow down the list, filter records by area
+(<span class="ui">connection</span>, <span class="ui">companies</span>,
+<span class="ui">billing</span>, <span class="ui">ticketing</span>,
+<span class="ui">system</span>) and by level. Check this page first if a scheduled operation did not
+produce the expected result.</p>
+
+<h2 id="logs">Obtaining Plugin Logs</h2>
+
+<h3>Required Privileges</h3>
+<p>To perform this task, a user must have the following role assigned:
+<span class="ui">Portal Administrator</span>.</p>
+
+<h3>Obtaining Plugin Logs</h3>
+
+<p>The plugin writes log files on the machine that hosts the Veeam Service Provider Console Server
+component. The log files are located in the following folder:</p>
+
+<div class="pathbox">C:\ProgramData\VspcAutotaskPlugin\logs</div>
+
+<p>The log contains records about plugin startup, every request that the portal sends to the plugin
+and its result, Autotask PSA API errors, and the result of every scheduled and manual
+synchronization. If the plugin cannot start, for example because the plugin package was deployed
+incompletely, the reason is written to the <code>startup-error.log</code> file in the same
+folder.</p>
+
+<p>The plugin also provides a log archive to the Veeam Service Provider Console plugin host, which
+contains the activity of the last 30 days.</p>
+
+<div class="note">
+  <span class="label">Note:</span>
+  <p>Log files may contain company names, alarm messages and Autotask PSA entity identifiers. Log
+  files do not contain the Autotask PSA secret. Review the collected logs before you send them
+  outside your organization.</p>
+</div>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<p>The following table describes the most common issues and the way to resolve them.</p>
+
+<table>
+  <thead><tr><th style="width:62mm">Issue</th><th>Cause and resolution</th></tr></thead>
+  <tbody>
+    <tr>
+      <td>Veeam Service Provider Console reports that a ticket is closed, but the ticket remains open
+        in Autotask PSA, and duplicate tickets are created for the same alarm.</td>
+      <td>The <span class="ui">Status for new tickets</span> and
+        <span class="ui">Status for closed tickets</span> settings use the same Autotask PSA status.
+        Select two different statuses in the <span class="ui">Ticket Settings</span> window. For
+        details, see <a href="#ticketsettings">Configuring Ticket Settings</a>.</td>
+    </tr>
+    <tr>
+      <td>The list of companies is empty.</td>
+      <td>The company lists have not been retrieved yet, or the connection to Autotask PSA is not
+        healthy. Click <span class="ui">Refresh Data</span>, and then check the status on the
+        <span class="ui">Plugin Status</span> page.</td>
+    </tr>
+    <tr>
+      <td>The <span class="ui">Contracts</span> window displays no contracts for a company.</td>
+      <td>The mapped Autotask PSA company has no contracts, or none of its contracts is a recurring
+        service contract. Create a recurring service contract in Autotask PSA, and then click
+        <span class="ui">Refresh Data</span> on the <span class="ui">Contracts</span> tab. Note that
+        the Autotask PSA company identifier <code>0</code> is a valid identifier: it is the record of
+        your own organization, and its contracts are listed as usual.</td>
+    </tr>
+    <tr>
+      <td>Queue, status and priority lists in the <span class="ui">Ticket Settings</span> window are
+        empty.</td>
+      <td>The values are retrieved from Autotask PSA when the window opens. If the connection is not
+        healthy, the lists remain empty and the fields are unavailable. Configure the connection
+        first.</td>
+    </tr>
+    <tr>
+      <td>Billing lines are reported with the <span class="ui">error</span> status.</td>
+      <td>Check the message in the results list. The most common causes are an effective date outside
+        the contract period, a contract that is not a recurring service contract, and an Autotask PSA
+        service that the API user cannot modify.</td>
+    </tr>
+    <tr>
+      <td>Reported quantities of a storage service are unexpectedly high or low.</td>
+      <td>Check that the measurement unit of the Autotask PSA service matches the unit of the mapped
+        Veeam Service Provider Console service. Veeam Service Provider Console storage counters are
+        converted to gigabytes, so an Autotask PSA service priced per terabyte will be billed
+        incorrectly.</td>
+    </tr>
+    <tr>
+      <td>Opening a plugin page returns an authorization error.</td>
+      <td>The plugin admits only <span class="ui">Portal Administrator</span> and
+        <span class="ui">Portal Operator</span> users. Log in with an account that has one of these
+        roles assigned.</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ==================== TERMINOLOGY ==================== -->
+<div class="topic">
+<h1 id="terminology">Terminology</h1>
+
+<p class="intro">The same entity may have different names in Veeam Service Provider Console and in
+Autotask PSA. The following table describes how the entities correspond to each other.</p>
+
+<table>
+  <thead>
+    <tr><th style="width:70mm">Veeam Service Provider Console</th><th>Autotask PSA</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Company</td><td>Company</td></tr>
+    <tr><td>Service, that is a billable usage counter</td><td>Service in the service catalog</td></tr>
+    <tr><td>Measured consumption of a service</td><td>Contract service, whose quantity is maintained
+      through contract service adjustments</td></tr>
+    <tr><td>Subscription plan</td><td>Service unit price</td></tr>
+    <tr><td>Alarm</td><td>Ticket</td></tr>
+    <tr><td>Alarm severity: <em>Warning</em>, <em>Error</em></td><td>Ticket priority</td></tr>
+    <tr><td>Alarm object type</td><td>Reported in the ticket title and description</td></tr>
+    <tr><td>Plugin REST API key, provisioned automatically</td><td>API user name, secret and
+      integration code</td></tr>
+    <tr><td>No equivalent</td><td>Zone, detected automatically from the API user name</td></tr>
+  </tbody>
+</table>
+
+<h2>Plugin Pages</h2>
+
+<table>
+  <thead><tr><th style="width:48mm">Page</th><th>Description</th></tr></thead>
+  <tbody>
+    <tr><td><span class="ui">Plugin Status</span></td><td>Integration status, Autotask PSA zone and
+      the connection window; toggles for the <span class="ui">Companies</span>,
+      <span class="ui">Ticketing</span> and <span class="ui">Billing</span> integration
+      features.</td></tr>
+    <tr><td><span class="ui">Companies</span></td><td>Mapping between companies in Veeam Service
+      Provider Console and Autotask PSA.</td></tr>
+    <tr><td><span class="ui">Ticketing</span></td><td>The <span class="ui">Alarms</span> tab
+      contains the list of alarms that create tickets and the
+      <span class="ui">Ticket Settings</span> window. The
+      <span class="ui">Recent Ticket Activity</span> tab reports the operations performed by the
+      ticket engine.</td></tr>
+    <tr><td><span class="ui">Billing</span></td><td>The <span class="ui">Contracts</span> tab
+      contains per-company contract and service selection, preview and synchronization. The
+      <span class="ui">Product Mapping</span> tab contains mapping of Veeam Service Provider Console
+      services to Autotask PSA services, and billing settings.</td></tr>
+    <tr><td><span class="ui">Activity</span></td><td>Plugin event log.</td></tr>
+  </tbody>
+</table>
+</div>
+
+<!-- ==================== REST ENDPOINTS ==================== -->
+<div class="topic">
+<h1 id="endpoints">Plugin REST Endpoints</h1>
+
+<p class="intro">The plugin UI uses the endpoints described in this section. They are documented for
+troubleshooting purposes. These endpoints are not a public API and may change in a future plugin
+version.</p>
+
+<p>All endpoints are served by the plugin service on the loopback interface and are proxied by Veeam
+Service Provider Console under
+<code>/plugins/7A4C3E529D144F6BB7A152AE23C90D11/</code>. Requests contain the identity of the portal
+user, which the plugin verifies. Only <span class="ui">Portal Administrator</span> and
+<span class="ui">Portal Operator</span> users are admitted.</p>
+
+<h2>Status and Settings</h2>
+<table class="tight">
+  <thead><tr><th style="width:16mm">Method</th><th style="width:64mm">Path</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td>GET</td><td><code>/api/status</code></td><td>Integration status overview</td></tr>
+    <tr><td>GET</td><td><code>/api/session</code></td><td>Reports whether the portal user may administer the plugin</td></tr>
+    <tr><td>GET</td><td><code>/api/health</code></td><td>Liveness probe</td></tr>
+    <tr><td>GET</td><td><code>/api/activity</code></td><td>Activity log</td></tr>
+    <tr><td>GET, POST</td><td><code>/api/settings/autotask</code></td><td>Read the masked connection settings; test and save new settings</td></tr>
+    <tr><td>POST</td><td><code>/api/settings/autotask/disconnect</code></td><td>Remove the Autotask PSA connection</td></tr>
+    <tr><td>GET, POST</td><td><code>/api/settings/features</code></td><td>Integration features</td></tr>
+    <tr><td>GET, POST</td><td><code>/api/settings/ticketing</code></td><td>Ticket settings</td></tr>
+    <tr><td>GET, POST</td><td><code>/api/settings/billing</code></td><td>Billing settings</td></tr>
+  </tbody>
+</table>
+
+<h2>Companies</h2>
+<table class="tight">
+  <thead><tr><th style="width:16mm">Method</th><th style="width:64mm">Path</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td>GET</td><td><code>/api/companies</code></td><td>Merged company mapping view</td></tr>
+    <tr><td>POST</td><td><code>/api/companies/refresh</code></td><td>Refresh both cached company lists</td></tr>
+    <tr><td>POST</td><td><code>/api/companies/automap</code></td><td>Match companies by name</td></tr>
+    <tr><td>POST</td><td><code>/api/companies/map</code></td><td>Map a company</td></tr>
+    <tr><td>POST</td><td><code>/api/companies/unmap</code></td><td>Remove a company mapping</td></tr>
+  </tbody>
+</table>
+
+<h2>Billing</h2>
+<table class="tight">
+  <thead><tr><th style="width:16mm">Method</th><th style="width:64mm">Path</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td>GET, POST</td><td><code>/api/billing/services</code></td><td>Service catalog with mappings; save a service mapping</td></tr>
+    <tr><td>GET, POST</td><td><code>/api/billing/companies</code></td><td>Per-company billing configuration</td></tr>
+    <tr><td>POST</td><td><code>/api/billing/companies/remove</code></td><td>Disable billing for a company</td></tr>
+    <tr><td>POST</td><td><code>/api/billing/preview</code></td><td>Dry run</td></tr>
+    <tr><td>POST</td><td><code>/api/billing/run</code></td><td>Run synchronization</td></tr>
+    <tr><td>GET</td><td><code>/api/billing/history</code></td><td>Adjustment history</td></tr>
+    <tr><td>GET</td><td><code>/api/vspc/subscriptionplans</code></td><td>Veeam Service Provider Console subscription plans</td></tr>
+  </tbody>
+</table>
+
+<h2>Ticketing</h2>
+<table class="tight">
+  <thead><tr><th style="width:16mm">Method</th><th style="width:64mm">Path</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td>GET</td><td><code>/api/ticketing/alarms</code></td><td>Alarms with ticketing rules</td></tr>
+    <tr><td>POST</td><td><code>/api/ticketing/alarms/refresh</code></td><td>Retrieve alarms from Veeam Service Provider Console</td></tr>
+    <tr><td>POST</td><td><code>/api/ticketing/alarms/enable</code></td><td>Enable or disable ticketing for alarms</td></tr>
+    <tr><td>GET</td><td><code>/api/ticketing/links</code></td><td>Recent ticket activity</td></tr>
+    <tr><td>POST</td><td><code>/api/ticketing/poll</code></td><td>Poll alarms now</td></tr>
+  </tbody>
+</table>
+
+<h2>Autotask PSA Lookups</h2>
+<table class="tight">
+  <thead><tr><th style="width:16mm">Method</th><th style="width:64mm">Path</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td>GET</td><td><code>/api/autotask/picklists</code></td><td>Queues, statuses, priorities, sources, ticket types</td></tr>
+    <tr><td>GET</td><td><code>/api/autotask/companytypes</code></td><td>Company types</td></tr>
+    <tr><td>GET</td><td><code>/api/autotask/servicefields</code></td><td>Service field values</td></tr>
+    <tr><td>GET</td><td><code>/api/autotask/services</code></td><td>Active services</td></tr>
+    <tr><td>GET</td><td><code>/api/autotask/billingcodes</code></td><td>Active billing codes</td></tr>
+    <tr><td>GET</td><td><code>/api/autotask/contracts?companyId=</code></td><td>Contracts of a company</td></tr>
+  </tbody>
+</table>
+
+<h2>Plugin Host Endpoints</h2>
+<p>Veeam Service Provider Console calls the following endpoints directly on the plugin service port.
+They are not proxied to the portal.</p>
+<table class="tight">
+  <thead><tr><th style="width:16mm">Method</th><th style="width:64mm">Path</th><th>Purpose</th></tr></thead>
+  <tbody>
+    <tr><td>GET</td><td><code>/api/v1/healthcheck</code></td><td>Health probe</td></tr>
+    <tr><td>GET</td><td><code>/api/v1/readiness</code></td><td>Readiness probe</td></tr>
+    <tr><td>GET</td><td><code>/api/v1/logs</code></td><td>Log archive of the last 30 days</td></tr>
+    <tr><td>DELETE</td><td><code>/api/v1/localdata</code></td><td>Purge plugin data before the plugin is removed</td></tr>
+  </tbody>
+</table>
+</div>
+
+</body>
+</html>
