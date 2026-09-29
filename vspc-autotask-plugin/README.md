@@ -4,7 +4,7 @@
 
 Jared Olson ([linkedin.com/in/jaredjolson](https://www.linkedin.com/in/jaredjolson))
 
-##Function
+## Function
 
 Integrates **Veeam Service Provider Console 9.2 and 9.3** with **Datto Autotask PSA**: company mapping, consolidated billing into Autotask PSA recurring service contracts, and automated service tickets created from Veeam Service Provider Console alarms. The plugin brings the feature set of the built-in ConnectWise Manage integration to service providers who run Autotask PSA as their business management platform.
 
